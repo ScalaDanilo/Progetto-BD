@@ -5,7 +5,7 @@ Nome		varchar(20)	NOT NULL,
 Cognome 	varchar(20)	NOT NULL,
 Nascita		Date		NOT NULL,
 PiedePR		varchar(10)	NOT NULL,
-DataRitiro	Date,
+DataRitiro	Date      Default NULL,
 Nazionalita	varchar(20)	NOT NULL,
 ID_Giocatore	varchar(14)	NOT NULL,
 AT		boolean		NOT NULL,
@@ -69,8 +69,8 @@ Nome 		varchar(20)	NOT NULL,
 DataVincita	Date		NOT NULL,
 Vincitore	varchar(14)	NOT NULL,
 
-PRIMARY KEY(Nome),
-PRIMARY KEY(DataVincita),
+CONSTRAINT PK_Trofeo
+  PRIMARY KEY(Nome, DataVincita),
 FOREIGN KEY(Vincitore) REFERENCES Calciatore(ID_Giocatore));
 
 
@@ -81,8 +81,8 @@ Nome 		varchar(20)	NOT NULL,
 DataVincita	Date		NOT NULL,
 Squadra		varchar(20)	NOT NULL,
 
-PRIMARY KEY(Nome),
-PRIMARY KEY(DataVincita),
+CONSTRAINT PK_Trofeo_Squadra
+  PRIMARY KEY(Nome, DataVincita),
 FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
 
 
@@ -136,8 +136,8 @@ Nome 		varchar(20)	NOT NULL,
 Tipo		varchar(20)	NOT NULL,
 Anno		Date		NOT NULL,
 
-PRIMARY KEY(Nome),
-UNIQUE(Anno));
+CONSTRAINT PK_Comp_Non_Naz
+  PRIMARY KEY(Nome, Anno));
 
 
 Competizioni_Nazionali(Nome, Tipo, Anno);
@@ -147,8 +147,8 @@ Nome		varchar(20)	NOT NULL,
 Nazione		varchar(20)	NOT NULL,
 Anno		Date		NOT NULL,
 
-PRIMARY KEY(Nome),
-UNIQUE(Anno));
+CONSTRAINT PK_Comp_Naz
+  PRIMARY KEY(Nome, Anno));
 
 
 Squadra_Gioca_In_Competizioni_Non_Nazionali(Squadra, Nome, Anno);
