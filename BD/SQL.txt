@@ -1,0 +1,174 @@
+CREATE TABLE Calciatore (
+Nome		varchar(20)	NOT NULL,
+Cognome 	varchar(20)	NOT NULL,
+Nascita		Date		NOT NULL,
+PiedePR		varchar(10)	NOT NULL,
+DataRitiro	Date      Default NULL,
+Nazionalita	varchar(20)	NOT NULL,
+ID_Giocatore	varchar(14)	NOT NULL,
+ValoreMercato	int		NOT NULL,
+
+PRIMARY KEY(ID_Giocatore));
+
+-------------------------------------------------------------
+
+CRATE TABLE Ruolo(
+Ruolo  varchar(200) NOT NULL,
+ID_Giocatore  varchar(20)  NOT NULL,
+
+FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore),
+PRIMARY KEY(Ruolo, ID_Giocatore));
+
+-------------------------------------------------------------
+
+CRATE TABLE Utente(
+Login		varchar(30)	NOT NULL,
+Password	password	NOT NULL,
+Priority int  NOT NULL,
+
+PRIMARY KEY(Login));
+
+-------------------------------------------------------------
+
+CRATE TABLE Feature_Caratteristiche(
+Tipologia	varchar(20)	NOT NULL,
+
+PRIMARY KEY(Tipologia));
+
+-------------------------------------------------------------
+
+CREATE TABLE Giocatore_Possiede_Feature_Caratteristiche(
+Giocatore	varchar(14)	NOT NULL,
+Tipo		varchar(20)	NOT NULL,
+
+FOREIGN KEY(Giocatore) REFERENCES Calciatore(ID_Giocatore),
+FOREIGN KEY(Tipo) REFERENCES Feature_caratteristiche(Tipologia));
+
+-------------------------------------------------------------
+
+CREATE TABLE Trofeo_Individuale(
+Nome 		varchar(20)	NOT NULL,
+DataVincita	Date		NOT NULL,
+Vincitore	varchar(14)	NOT NULL,
+
+CONSTRAINT PK_Trofeo
+  PRIMARY KEY(Nome, DataVincita),
+FOREIGN KEY(Vincitore) REFERENCES Calciatore(ID_Giocatore));
+
+-------------------------------------------------------------
+
+CREATE TABLE SponsorTec(
+Nome		varchar(20)	NOT NULL,
+Finanziamento	bigint		NOT NULL,
+
+PRIMARY KEY(Nome));
+
+-------------------------------------------------------------
+
+CREATE TABLE Competizioni_Non_Nazionali(
+Nome 		varchar(20)	NOT NULL,
+Tipo		varchar(20)	NOT NULL,
+Anno		Date		NOT NULL,
+
+CONSTRAINT PK_Comp_Non_Naz
+  PRIMARY KEY(Nome, Anno));
+
+-------------------------------------------------------------
+
+CRATE TABLE Competizioni_Nazionali(
+Nome		varchar(20)	NOT NULL,
+Nazione		varchar(20)	NOT NULL,
+Anno		Date		NOT NULL,
+
+CONSTRAINT PK_Comp_Naz
+  PRIMARY KEY(Nome, Anno));
+
+-------------------------------------------------------------
+
+CRATE TABLE Squadre(NomeSquadra, Nazionalita)
+
+Squadre(
+NomeSquadra	varchar(20)	NOT NULL,
+Nazionalita	varchar(20)	NOT NULL,
+NomeSponsor	varchar(20)	NOT NULL,
+
+PRIMARY KEY(NomeSquadra)
+FOREIGN KEY(NomeSponsor) REFERENCES SponsorTec(Nome));
+
+-------------------------------------------------------------
+
+CRATE TABLE Rosa(
+Anno  date  NOT NULL,
+ID_Giocatore  varchar(20)  NOT NULL,
+Squadra  varchar(20) NOT NULL,
+
+FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore),
+FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
+
+-------------------------------------------------------------
+
+CREATE TABLE Militanza (
+Inizio		Date		NOT NULL,		
+Fine		Date,
+ID_Militanza	varchar(20)	NOT NULL,
+Giocatore	varchar(14)	NOT NULL,
+Squadra		varchar(20)	NOT NULL,
+TiriSegnati	int		NOT NULL,
+PartiteGiocate	int		NOT NULL,
+
+
+PRIMARY KEY(ID_Militanza),
+FOREIGN KEY(Squadra) REFERENCES Squarde(NomeSquadra),
+FOREIGN KEY(Giocatore) REFERENCES Calciatore(ID_Giocatore));
+
+
+-------------------------------------------------------------
+
+CRATE TABLE GoalSubiti(
+GoalSubiti  int  NOT NULL,
+ID_Giocatore  varchar(20)  NOT NULL,
+ID_Militanza  varchar(20)  NOT NULL,
+
+FOREIGN KEY(ID_Militanza) REFERENCES Militanza(ID_Militanza),
+FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore));
+
+-------------------------------------------------------------
+
+CRATE TABLE Trofeo_Squadra_Calciatore(
+Nome		varchar(20)	NOT NULL,
+DataVincita	Date		NOT NULL,
+Squadra		varchar(20)	NOT NULL,
+CalciatoreV	varchar(14)	NOT NULL,
+
+FOREIGN KEY(Nome) REFERENCES Trofeo_Squadra(Nome),
+FOREIGN KEY(DataVincita) REFERENCES Trofeo_Squadra(DataVincita),
+FOREIGN KEY(CalciatoreV) REFERENCES Calciatore(ID_Giocatore),
+FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
+
+-------------------------------------------------------------
+
+CRATE TABLE Squadra_Gioca_In_Competizioni_Non_Nazionali(Squadra, Nome, Anno);
+
+Squadra_Gioca_In_Competizioni_Non_Nazionali(
+Squadra		varchar(20)	NOT NULL,
+Nome		varchar(20)	NOT NULL,
+Anno		Date		NOT NULL,
+
+FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
+FOREIGN KEY(Nome) REFERENCES Competizioni_Non_Nazionali(Nome),
+FOREIGN KEY(Anno) REFERENCES Competizioni_Non_Nazionali(Anno));
+
+-------------------------------------------------------------
+
+CRATE TABLE Squadra_Gioca_In_Competizioni_Nazionali(Squadra, Nome, Anno);
+
+Squadra_Gioca_In_Competizioni_Non_Nazionali(
+Squadra		varchar(20)	NOT NULL,
+Nome		varchar(20)	NOT NULL,
+Anno		Date		NOT NULL,
+
+FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
+FOREIGN KEY(Nome) REFERENCES Competizioni_Nazionali(Nome),
+FOREIGN KEY(Anno) REFERENCES Competizioni_Nazionali(Anno));
+
+-------------------------------------------------------------
