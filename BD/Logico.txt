@@ -8,13 +8,28 @@ PiedePR		varchar(10)	NOT NULL,
 DataRitiro	Date      Default NULL,
 Nazionalita	varchar(20)	NOT NULL,
 ID_Giocatore	varchar(14)	NOT NULL,
-AT		boolean		NOT NULL,
-C		boolean		NOT NULL,
-D		boolean		NOT NULL,
-PR		boolean		NOT NULL,
 ValoreMercato	int		NOT NULL,
 
 PRIMARY KEY(ID_Giocatore));
+
+Ruolo(Ruolo, ID_Giocatore);
+
+CRATE TABLE Ruolo(
+Ruolo  varchar(200) NOT NULL,
+ID_Giocatore  varchar(20)  NOT NULL,
+
+FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore),
+PRIMARY KEY(Ruolo, ID_Giocatore));
+
+GoalSubiti(GoalSubiti, ID_Giocatore, ID_Militanza)
+
+CRATE TABLE GoalSubiti(
+GoalSubiti  int  NOT NULL,
+ID_Giocatore  varchar(20)  NOT NULL,
+ID_Militanza  varchar(20)  NOT NULL,
+
+FOREIGN KEY(ID_Militanza) REFERENCES Militanza(ID_Militanza),
+FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore));
 
 
 Militanza(Inizio, Fine*, ID_Militanza{PK}, Giocatore{FK}, Squadra{FK}, GoalSubiti*, TiriSegnati, PartiteGiocate)
@@ -25,7 +40,6 @@ Fine		Date,
 ID_Militanza	varchar(20)	NOT NULL,
 Giocatore	varchar(14)	NOT NULL,
 Squadra		varchar(20)	NOT NULL,
-GoalSubiti	int,
 TiriSegnati	int		NOT NULL,
 PartiteGiocate	int		NOT NULL,
 
@@ -35,11 +49,12 @@ FOREIGN KEY(Squadra) REFERENCES Squarde(NomeSquadra),
 FOREIGN KEY(Giocatore) REFERENCES Calciatore(ID_Giocatore));
 
 
-ADMIN(Login{PK}, Password)
+Utente(Login{PK}, Password, Priority)
 
 ADMIN(
 Login		varchar(30)	NOT NULL,
 Password	password	NOT NULL,
+Priority int  NOT NULL,
 
 PRIMARY KEY(Login));
 
@@ -109,6 +124,17 @@ NomeSponsor	varchar(20)	NOT NULL,
 
 PRIMARY KEY(NomeSquadra)
 FOREIGN KEY(NomeSponsor) REFERENCES SponsorTec(Nome));
+
+Rosa(Anno, ID_Giocatore, Squadra)
+
+CRATE TABLE Rosa(
+Anno  date  NOT NULL,
+ID_Giocatore  varchar(20)  NOT NULL,
+Squadra  varchar(20) NOT NULL,
+
+FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore),
+FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
+)
 
 
 Sponsor_Secondari(Nome, Finanziamento);
