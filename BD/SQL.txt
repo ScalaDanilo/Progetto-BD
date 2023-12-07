@@ -166,22 +166,8 @@ FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
 
 -------------------------------------------------------------
 
-CRATE TABLE Squadra_Gioca_In_Competizioni_Non_Nazionali(Squadra, Nome, Anno);
 
-Squadra_Gioca_In_Competizioni_Non_Nazionali(
-Squadra		varchar(20)	NOT NULL,
-Nome		varchar(20)	NOT NULL,
-Anno		Date		NOT NULL,
-
-FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
-FOREIGN KEY(Nome) REFERENCES Competizioni_Non_Nazionali(Nome),
-FOREIGN KEY(Anno) REFERENCES Competizioni_Non_Nazionali(Anno));
-
--------------------------------------------------------------
-
-CRATE TABLE Squadra_Gioca_In_Competizioni_Nazionali(Squadra, Nome, Anno);
-
-Squadra_Gioca_In_Competizioni_Non_Nazionali(
+CREATE TABLE Squadra_Gioca_In_Competizioni_Non_Nazionali(
 Squadra		varchar(20)	NOT NULL,
 Nome		varchar(20)	NOT NULL,
 Anno		Date		NOT NULL,
