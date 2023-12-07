@@ -177,3 +177,13 @@ FOREIGN KEY(Nome) REFERENCES Competizioni_Nazionali(Nome),
 FOREIGN KEY(Anno) REFERENCES Competizioni_Nazionali(Anno));
 
 -------------------------------------------------------------
+
+Squadra_Gioca_In_Competizioni_Nazionali(
+Squadra		varchar(20)	NOT NULL,
+Nome		varchar(20)	NOT NULL,
+Anno		Date		NOT NULL,
+
+FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
+FOREIGN KEY(Nome) REFERENCES Competizioni_Nazionali(Nome),
+FOREIGN KEY(Anno) REFERENCES Competizioni_Nazionali(Anno));
+
