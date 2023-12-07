@@ -57,6 +57,17 @@ FOREIGN KEY(Vincitore) REFERENCES Calciatore(ID_Giocatore));
 
 -------------------------------------------------------------
 
+CREATE TABLE Trofeo_Squadra(
+Nome 		varchar(20)	NOT NULL,
+DataVincita	Date		NOT NULL,
+Squadra		varchar(20)	NOT NULL,
+
+CONSTRAINT PK_Trofeo_Squadra
+  PRIMARY KEY(Nome, DataVincita),
+FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
+
+-------------------------------------------------------------
+
 CREATE TABLE SponsorTec(
 Nome		varchar(20)	NOT NULL,
 Finanziamento	bigint		NOT NULL,
