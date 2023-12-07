@@ -76,6 +76,14 @@ PRIMARY KEY(Nome));
 
 -------------------------------------------------------------
 
+Sponsor_Secondari(
+Nome 		varchar(20)	NOT NULL,
+Finanziamento	int		NOT NULL,
+
+PRIMARY KEY(Nome));
+
+-------------------------------------------------------------
+
 CREATE TABLE Competizioni_Non_Nazionali(
 Nome 		varchar(20)	NOT NULL,
 Tipo		varchar(20)	NOT NULL,
