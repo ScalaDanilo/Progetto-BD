@@ -1,0 +1,340 @@
+INSERT INTO Calciatore (Nome, Cognome, Nascita, PiedePR, DataRitiro, Nazionalita, ID_Giocatore, ValoreMercato)
+VALUES
+  ('Giovanni', 'Ricci', '1990-03-12', 'Destro', NULL, 'Italia', 'CALC001', 30000000),
+  ('Marco', 'Bianchi', '1992-06-25', 'Sinistro', NULL, 'Spagna', 'CALC002', 25000000),
+  ('Alessia', 'Rossi', '1988-11-08', 'Destro', NULL, 'Brasile', 'CALC003', 40000000),
+  ('Laura', 'Verdi', '1995-04-18', 'Sinistro', NULL, 'Francia', 'CALC004', 35000000),
+  ('Davide', 'Neri', '1993-09-30', 'Destro', NULL, 'Argentina', 'CALC005', 32000000),
+  ('Valentina', 'Gialli', '1994-02-14', 'Sinistro', NULL, 'Germania', 'CALC006', 28000000),
+  ('Luca', 'Marrone', '1991-07-07', 'Destro', NULL, 'Inghilterra', 'CALC007', 38000000),
+  ('Simona', 'Blu', '1989-12-23', 'Sinistro', NULL, 'Portogallo', 'CALC008', 30000000),
+  ('Riccardo', 'Verde', '1996-05-05', 'Destro', NULL, 'Olanda', 'CALC009', 42000000),
+  ('Elena', 'Azzurri', '1997-08-20', 'Sinistro', NULL, 'Svezia', 'CALC010', 32000000),
+  ('Lorenzo', 'Martinez', '1994-08-12', 'Destro', NULL, 'Italia', 'CALC011', 25000000),
+  ('Giovanni', 'Rossi', '1990-03-25', 'Sinistro', NULL, 'Argentina', 'CALC012', 30000000),
+  ('Marco', 'Conti', '1995-06-18', 'Destro', NULL, 'Brasile', 'CALC013', 18000000),
+  ('Federico', 'Ricci', '1993-12-08', 'Destro', '2023-01-01', 'Italia', 'CALC014', 12000000),
+  ('Lucas', 'Fernandez', '1992-05-20', 'Sinistro', NULL, 'Spagna', 'CALC015', 22000000),
+  ('Gabriel', 'Santos', '1996-09-30', 'Destro', NULL, 'Brasile', 'CALC016', 28000000),
+  ('Matteo', 'Ferrari', '1988-11-02', 'Destro', '2022-12-31', 'Italia', 'CALC017', 15000000),
+  ('Pablo', 'Gomez', '1991-04-14', 'Sinistro', NULL, 'Argentina', 'CALC018', 20000000),
+  ('Luca', 'Marini', '1997-07-08', 'Destro', NULL, 'Italia', 'CALC019', 16000000),
+  ('Carlos', 'Rodriguez', '1998-02-03', 'Sinistro', NULL, 'Spagna', 'CALC020', 26000000);
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO Ruolo (Ruolo, ID_Giocatore)
+VALUES
+  ('Attaccante', 'CALC001'),
+  ('Difensore', 'CALC002'),
+  ('Centrocampista', 'CALC003'),
+  ('Portiere', 'CALC004'),
+  ('Terzino', 'CALC005'),
+  ('Centrocampista', 'CALC006'),
+  ('Attaccante', 'CALC007'),
+  ('Difensore', 'CALC008'),
+  ('Terzino', 'CALC009'),
+  ('Portiere', 'CALC010'),
+  ('Attaccante', 'CALC011'),
+  ('Centrocampista', 'CALC012'),
+  ('Attaccante', 'CALC013'),
+  ('Centrocampista', 'CALC014'),
+  ('Difensore', 'CALC015'),
+  ('Centrocampista', 'CALC016'),
+  ('Difensore', 'CALC017'),
+  ('Centrocampista', 'CALC018'),
+  ('Attaccante', 'CALC019'),
+  ('Difensore', 'CALC020');
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO Utente (Login, Password, Priority)
+VALUES
+  ('admin', 'adminpassword', 1),
+  ('user1', 'userpassword', 2),
+  ('user2', 'securepassword', 3),
+  ('guest', 'guestpassword', 4),
+  ('manager', 'managerpassword', 1),
+  ('viewer', 'viewerpassword', 2),
+  ('editor', 'editorpassword', 3),
+  ('guest2', 'guest2password', 4),
+  ('superadmin', 'superadminpassword', 1),
+  ('testuser', 'testuserpassword', 2);
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO Feature_Caratteristiche (Tipologia)
+VALUES
+  ('Velocità'),
+  ('Tecnica'),
+  ('Dribbling'),
+  ('Precisione di tiro'),
+  ('Visione di gioco'),
+  ('Difesa'),
+  ('Passaggi'),
+  ('Fisico'),
+  ('Capacità atletica'),
+  ('Controllo palla'),
+  ('Agilità'),
+  ('Forza'),
+  ('Resistenza'),
+  ('Marcatura'),
+  ('Capacità difensive');
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO Giocatore_Possiede_Feature_Caratteristiche (Giocatore, Tipo)
+VALUES
+  ('CALC001', 'Velocità'),
+  ('CALC002', 'Tecnica'),
+  ('CALC003', 'Dribbling'),
+  ('CALC004', 'Precisione di tiro'),
+  ('CALC005', 'Visione di gioco'),
+  ('CALC006', 'Difesa'),
+  ('CALC007', 'Passaggi'),
+  ('CALC008', 'Fisico'),
+  ('CALC009', 'Capacità atletica'),
+  ('CALC010', 'Controllo palla'),
+  ('CALC011', 'Velocità'),
+  ('CALC011', 'Agilità'),
+  ('CALC012', 'Forza'),
+  ('CALC012', 'Precisione Tiri'),
+  ('CALC013', 'Dribbling'),
+  ('CALC013', 'Passaggi'),
+  ('CALC014', 'Resistenza'),
+  ('CALC014', 'Visione di Gioco'),
+  ('CALC015', 'Marcatura'),
+  ('CALC015', 'Capacità difensive'),
+  ('CALC016', 'Velocità'),
+  ('CALC016', 'Agilità'),
+  ('CALC017', 'Forza'),
+  ('CALC017', 'Precisione Tiri'),
+  ('CALC018', 'Dribbling'),
+  ('CALC018', 'Passaggi'),
+  ('CALC019', 'Resistenza'),
+  ('CALC019', 'Visione di Gioco'),
+  ('CALC020', 'Marcatura'),
+  ('CALC020', 'Capacità difensive');
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO Trofeo_Individuale (Nome, DataVincita, Vincitore)
+VALUES
+  ('Pallone d\'Oro', '2022-12-01', 'CALC001'),
+  ('Miglior Marcatore', '2022-12-15', 'CALC002'),
+  ('Miglior Difensore', '2022-11-20', 'CALC003'),
+  ('Miglior Portiere', '2022-11-30', 'CALC004'),
+  ('Miglior Terzino', '2022-12-05', 'CALC005'),
+  ('Miglior Centrocampista', '2022-11-25', 'CALC006'),
+  ('Capocannoniere', '2022-12-10', 'CALC007'),
+  ('Miglior Attaccante', '2022-12-18', 'CALC008'),
+  ('Miglior Terzino', '2022-12-08', 'CALC009'),
+  ('Miglior Portiere', '2022-12-25', 'CALC010');
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO Trofeo_Squadra (Nome, DataVincita, Squadra)
+VALUES
+  ('Champions League', '2022-06-01', 'Juventus'),
+  ('La Liga', '2022-05-15', 'Barcelona'),
+  ('Coppa Italia', '2022-04-30', 'AC Milan'),
+  ('Premier League', '2022-05-20', 'Manchester United'),
+  ('Bundesliga', '2022-05-25', 'Bayern Munich'),
+  ('Ligue 1', '2022-05-10', 'Paris Saint-Germain'),
+  ('Serie A', '2022-05-30', 'Inter Milan'),
+  ('Eredivisie', '2022-06-05', 'Ajax'),
+  ('Primeira Liga', '2022-06-15', 'Porto'),
+  ('Russian Premier League', '2022-06-20', 'Zenit St. Petersburg');
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO Sponsor_Secondari (Nome, Finanziamento, Squadra)
+VALUES
+  ('Coca-Cola', 500000, 'Juventus'),
+  ('Pepsi', 400000, 'Barcelona'),
+  ('Samsung', 600000, 'AC Milan'),
+  ('Nike', 700000, 'Manchester United'),
+  ('Adidas', 550000, 'Bayern Munich'),
+  ('Puma', 480000, 'Paris Saint-Germain'),
+  ('Kappa', 520000, 'Inter Milan'),
+  ('Under Armour', 450000, 'Ajax'),
+  ('EA Sports', 800000, 'Porto'),
+  ('Vodafone', 350000, 'Zenit St. Petersburg');
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO Competizioni_Non_Nazionali (Nome, Tipo, Anno)
+VALUES
+  ('Champions League', 'UEFA', '2022-2023'),
+  ('Coppa Libertadores', 'CONMEBOL', '2022-2023'),
+  ('CAF Champions League', 'CAF', '2022-2023'),
+  ('AFC Champions League', 'AFC', '2022-2023'),
+  ('CONCACAF Champions League', 'CONCACAF', '2022-2023'),
+  ('OFC Champions League', 'OFC', '2022-2023'),
+  ('Coppa Sudamericana', 'CONMEBOL', '2022-2023'),
+  ('Coppa della Confederazione CAF', 'CAF', '2022-2023'),
+  ('Coppa AFC', 'AFC', '2022-2023'),
+  ('CONCACAF League', 'CONCACAF', '2022-2023');
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO Competizioni_Nazionali (Nome, Nazione, Anno)
+VALUES
+  ('Serie A', 'Italia', '2022-2023'),
+  ('La Liga', 'Spagna', '2022-2023'),
+  ('Premier League', 'Inghilterra', '2022-2023'),
+  ('Bundesliga', 'Germania', '2022-2023'),
+  ('Ligue 1', 'Francia', '2022-2023'),
+  ('Eredivisie', 'Olanda', '2022-2023'),
+  ('Primeira Liga', 'Portogallo', '2022-2023'),
+  ('Russian Premier League', 'Russia', '2022-2023'),
+  ('Brasileirão Série A', 'Brasile', '2022-2023'),
+  ('Argentine Primera División', 'Argentina', '2022-2023');
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO Squadra_Gioca_In_Competizioni_Non_Nazionali (Squadra, Nome, Anno)
+VALUES
+  ('Juventus', 'Champions League', '2022-2023'),
+  ('Barcelona', 'Champions League', '2022-2023'),
+  ('AC Milan', 'Coppa Libertadores', '2022-2023'),
+  ('Manchester United', 'Coppa Libertadores', '2022-2023'),
+  ('Bayern Munich', 'AFC Champions League', '2022-2023'),
+  ('Paris Saint-Germain', 'CONCACAF Champions League', '2022-2023'),
+  ('Inter Milan', 'Coppa Sudamericana', '2022-2023'),
+  ('Ajax', 'OFC Champions League', '2022-2023'),
+  ('Porto', 'Coppa AFC', '2022-2023'),
+  ('Zenit St. Petersburg', 'CONCACAF League', '2022-2023'),
+  ('AC Milan', 'Coppa Libertadores', '2022-2023'),
+  ('Manchester United', 'AFC Champions League', '2022-2023'),
+  ('Inter Milan', 'Coppa Sudamericana', '2022-2023'),
+  ('Ajax', 'OFC Champions League', '2022-2023'),
+  ('Porto', 'Coppa AFC', '2022-2023'),
+  ('Zenit St. Petersburg', 'CONCACAF League', '2022-2023');
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO Squadra_Gioca_In_Competizioni_Nazionali (Squadra, Nome, Anno)
+VALUES
+  ('Juventus', 'Serie A', '2022-2023'),
+  ('Barcelona', 'La Liga', '2022-2023'),
+  ('AC Milan', 'Serie A', '2022-2023'),
+  ('Manchester United', 'Premier League', '2022-2023'),
+  ('Bayern Munich', 'Bundesliga', '2022-2023'),
+  ('Paris Saint-Germain', 'Ligue 1', '2022-2023'),
+  ('Inter Milan', 'Serie A', '2022-2023'),
+  ('Ajax', 'Eredivisie', '2022-2023'),
+  ('Porto', 'Primeira Liga', '2022-2023'),
+  ('Zenit St. Petersburg', 'Russian Premier League', '2022-2023'),
+  ('Juventus', 'Serie A', '2022-2023'),
+  ('Barcelona', 'La Liga', '2022-2023'),
+  ('AC Milan', 'Serie A', '2022-2023'),
+  ('Manchester United', 'Premier League', '2022-2023'),
+  ('Bayern Munich', 'Bundesliga', '2022-2023'),
+  ('Paris Saint-Germain', 'Ligue 1', '2022-2023');
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO Squadre (NomeSquadra, Nazionalita, NomeSponsor)
+VALUES
+  ('Juventus', 'Italia', 'Jeep'),
+  ('Barcelona', 'Spagna', 'Rakuten'),
+  ('AC Milan', 'Italia', 'Emirates'),
+  ('Manchester United', 'Inghilterra', 'Chevrolet'),
+  ('Bayern Munich', 'Germania', 'Adidas'),
+  ('Paris Saint-Germain', 'Francia', 'Nike'),
+  ('Inter Milan', 'Italia', 'Pirelli'),
+  ('Ajax', 'Olanda', 'Ziggo'),
+  ('Porto', 'Portogallo', 'MEO'),
+  ('Zenit St. Petersburg', 'Russia', 'Gazprom');
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO Rosa (Anno, ID_Giocatore, Squadra)
+VALUES
+  ('2022-2023', 'CALC001', 'Juventus'),
+  ('2022-2023', 'CALC002', 'Barcelona'),
+  ('2022-2023', 'CALC003', 'AC Milan'),
+  ('2022-2023', 'CALC004', 'Manchester United'),
+  ('2022-2023', 'CALC005', 'Bayern Munich'),
+  ('2022-2023', 'CALC006', 'Paris Saint-Germain'),
+  ('2022-2023', 'CALC007', 'Inter Milan'),
+  ('2022-2023', 'CALC008', 'Ajax'),
+  ('2022-2023', 'CALC009', 'Porto'),
+  ('2022-2023', 'CALC010', 'Zenit St. Petersburg'),
+  ('2022-2023', 'CALC011', 'Juventus'),
+  ('2022-2023', 'CALC012', 'Barcelona'),
+  ('2022-2023', 'CALC013', 'AC Milan'),
+  ('2022-2023', 'CALC014', 'Manchester United'),
+  ('2022-2023', 'CALC015', 'Bayern Munich'),
+  ('2022-2023', 'CALC016', 'Paris Saint-Germain'),
+  ('2022-2023', 'CALC017', 'Inter Milan'),
+  ('2022-2023', 'CALC018', 'Ajax'),
+  ('2022-2023', 'CALC019', 'Porto'),
+  ('2022-2023', 'CALC020', 'Zenit St. Petersburg');
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO Militanza (Inizio, Fine, ID_Militanza, Giocatore, Squadra, TiriSegnati, PartiteGiocate)
+VALUES
+  ('2022-01-01', '2023-01-01', 'MIL001', 'CALC001', 'Juventus', 20, 30),
+  ('2022-02-01', '2023-02-01', 'MIL002', 'CALC002', 'Barcelona', 15, 25),
+  ('2022-03-01', '2023-03-01', 'MIL003', 'CALC003', 'AC Milan', 25, 35),
+  ('2022-04-01', '2023-04-01', 'MIL004', 'CALC004', 'Manchester United', 18, 28),
+  ('2022-05-01', '2023-05-01', 'MIL005', 'CALC005', 'Bayern Munich', 22, 32),
+  ('2022-06-01', '2023-06-01', 'MIL006', 'CALC006', 'Paris Saint-Germain', 17, 27),
+  ('2022-07-01', '2023-07-01', 'MIL007', 'CALC007', 'Inter Milan', 23, 33),
+  ('2022-08-01', '2023-08-01', 'MIL008', 'CALC008', 'Ajax', 19, 29),
+  ('2022-09-01', '2023-09-01', 'MIL009', 'CALC009', 'Porto', 16, 26),
+  ('2022-10-01', '2023-10-01', 'MIL010', 'CALC010', 'Zenit St. Petersburg', 21, 31),
+  ('2022-01-01', '2023-01-01', 'MIL011', 'CALC011', 'Juventus', 18, 28),
+  ('2022-02-01', '2023-02-01', 'MIL012', 'CALC012', 'Barcelona', 22, 32),
+  ('2022-03-01', '2023-03-01', 'MIL013', 'CALC013', 'AC Milan', 15, 25),
+  ('2022-04-01', '2023-04-01', 'MIL014', 'CALC014', 'Manchester United', 20, 30),
+  ('2022-05-01', '2023-05-01', 'MIL015', 'CALC015', 'Bayern Munich', 14, 24),
+  ('2022-06-01', '2023-06-01', 'MIL016', 'CALC016', 'Paris Saint-Germain', 19, 29),
+  ('2022-07-01', '2023-07-01', 'MIL017', 'CALC017', 'Inter Milan', 16, 26),
+  ('2022-08-01', '2023-08-01', 'MIL018', 'CALC018', 'Ajax', 21, 31),
+  ('2022-09-01', '2023-09-01', 'MIL019', 'CALC019', 'Porto', 23, 33),
+  ('2022-10-01', '2023-10-01', 'MIL020', 'CALC020', 'Zenit St. Petersburg', 17, 27);
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO GoalSubiti (GoalSubiti, ID_Giocatore, ID_Militanza)
+VALUES
+  (10, 'CALC001', 'MIL001'),
+  (15, 'CALC002', 'MIL002'),
+  (12, 'CALC003', 'MIL003'),
+  (8, 'CALC004', 'MIL004'),
+  (11, 'CALC005', 'MIL005'),
+  (9, 'CALC006', 'MIL006'),
+  (14, 'CALC007', 'MIL007'),
+  (7, 'CALC008', 'MIL008'),
+  (13, 'CALC009', 'MIL009'),
+  (10, 'CALC010', 'MIL010');
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO Trofeo_Squadra_Calciatore (Nome, DataVincita, Squadra, CalciatoreV)
+VALUES
+  ('Coppa Italia', '2022-04-30', 'AC Milan', 'CALC003'),
+  ('Premier League', '2022-05-20', 'Manchester United', 'CALC004'),
+  ('Serie A', '2022-05-30', 'Inter Milan', 'CALC007'),
+  ('Eredivisie', '2022-06-05', 'Ajax', 'CALC008'),
+  ('Primeira Liga', '2022-06-15', 'Porto', 'CALC009'),
+  ('Russian Premier League', '2022-06-20', 'Zenit St. Petersburg', 'CALC010');
+
+-------------------------------------------------------------------------------------------------------
+
+INSERT INTO SponsorTec (Nome, Finanziamento)
+VALUES
+  ('Nike', 1000000),
+  ('Adidas', 900000),
+  ('Puma', 800000),
+  ('Under Armour', 750000),
+  ('New Balance', 700000),
+  ('Reebok', 650000),
+  ('Lotto', 600000),
+  ('Diadora', 550000),
+  ('Umbro', 500000),
+  ('Kappa', 450000);
