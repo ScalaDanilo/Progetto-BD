@@ -1,183 +1,36 @@
 Calciatore(Nome, Cognome, Nascita, PiedePR, DataRitiro*, Nazionalita, ID_Giocatore{PK}, ValoreMercato);
 
-Calciatore (
-Nome		varchar(20)	NOT NULL,
-Cognome 	varchar(20)	NOT NULL,
-Nascita		Date		NOT NULL,
-PiedePR		varchar(10)	NOT NULL,
-DataRitiro	Date      Default NULL,
-Nazionalita	varchar(20)	NOT NULL,
-ID_Giocatore	varchar(14)	NOT NULL,
-ValoreMercato	int		NOT NULL,
+Ruolo(Ruolo{PK}, ID_Giocatore{FK -> Calciatore}{PK});
 
-PRIMARY KEY(ID_Giocatore));
+GoalSubiti(GoalSubiti, ID_Giocatore{FK -> Calciatore}{PK}, ID_Militanza{FK -> Militanza}{PK})
 
-Ruolo(Ruolo, ID_Giocatore);
-
-CRATE TABLE Ruolo(
-Ruolo  varchar(200) NOT NULL,
-ID_Giocatore  varchar(20)  NOT NULL,
-
-FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore),
-PRIMARY KEY(Ruolo, ID_Giocatore));
-
-GoalSubiti(GoalSubiti, ID_Giocatore, ID_Militanza)
-
-CRATE TABLE GoalSubiti(
-GoalSubiti  int  NOT NULL,
-ID_Giocatore  varchar(20)  NOT NULL,
-ID_Militanza  varchar(20)  NOT NULL,
-
-FOREIGN KEY(ID_Militanza) REFERENCES Militanza(ID_Militanza),
-FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore));
-
-
-Militanza(Inizio, Fine*, ID_Militanza{PK}, Giocatore{FK}, Squadra{FK}, GoalSubiti*, TiriSegnati, PartiteGiocate)
-
-Militanza (
-Inizio		Date		NOT NULL,		
-Fine		Date,
-ID_Militanza	varchar(20)	NOT NULL,
-Giocatore	varchar(14)	NOT NULL,
-Squadra		varchar(20)	NOT NULL,
-TiriSegnati	int		NOT NULL,
-PartiteGiocate	int		NOT NULL,
-
-
-PRIMARY KEY(ID_Militanza),
-FOREIGN KEY(Squadra) REFERENCES Squarde(NomeSquadra),
-FOREIGN KEY(Giocatore) REFERENCES Calciatore(ID_Giocatore));
-
+Militanza(Inizio, Fine*, ID_Militanza{PK}, Giocatore{FK -> Calciatore}, Squadra{FK -> Squadra}, GoalSubiti*, TiriSegnati, PartiteGiocate)
 
 Utente(Login{PK}, Password, Priority)
 
-ADMIN(
-Login		varchar(30)	NOT NULL,
-Password	password	NOT NULL,
-Priority int  NOT NULL,
+Feature_Caratteristiche(Tipologia{PK})
 
-PRIMARY KEY(Login));
+Giocatore_Possiede_Feature_Caratteristiche(Giocatore{FK -> Calciatore}{PK}, Tipo{FK -> Feature Caratteristiche}{PK})
 
+Trofeo_Individuale(Nome{PK}, DataAssegnazione{PK}, Vincitore{FK -> Calciatore})
 
-Feature_Caratteristiche(Tipologia)
+Trofeo_Squadra(Nome{PK}, DataVincita{PK}, Squadra{FK -> Squadre})
 
-Feature_Caratteristiche(
-Tipologia	varchar(20)	NOT NULL,
+Trofeo_Squadra_Calciatore(Nome{FK -> Trofeo_Squadra}{PK}, DataVincita{FK -> Trofeo_Squadra}{PK}, Squadra{FK -> Squadre}, CalciatoreV{FK -> Calciatore}{PK})
 
-PRIMARY KEY(Tipologia));
+Squadre(NomeSquadra{PK}, Nazionalita, NomeSponsor{FK -> SponsorTec})
 
+Rosa(Anno{PK}, ID_Giocatore{FK -> Calciatore}{PK}, Squadra{FK -> Squadre}{PK})
 
-Giocatore_Possiede_Feature_Caratteristiche(Giocatore, Tipo)
+Sponsor_Secondari(Nome{PK}, Finanziamento);
 
-Giocatore_Possiede_Feature_Caratteristiche(
-Giocatore	varchar(14)	NOT NULL,
-Tipo		varchar(20)	NOT NULL,
+SponsorTec(Nome{PK}, Finanziamento);
 
-FOREIGN KEY(Giocatore) REFERENCES Calciatore(ID_Giocatore),
-FOREIGN KEY(Tipo) REFERENCES Feature_caratteristiche(Tipologia));
+Competizioni_Non_Nazionali(Nome{PK}, Tipo, Anno{PK});
 
+Competizioni_Nazionali(Nome{PK}, Tipo, Anno{PK});
 
-Trofeo_Individuale(Nome, DataAssegnazione, Vincitore)
-
-Trofeo_Individuale(
-Nome 		varchar(20)	NOT NULL,
-DataVincita	Date		NOT NULL,
-Vincitore	varchar(14)	NOT NULL,
-
-CONSTRAINT PK_Trofeo
-  PRIMARY KEY(Nome, DataVincita),
-FOREIGN KEY(Vincitore) REFERENCES Calciatore(ID_Giocatore));
-
-
-Trofeo_Squadra(Nome, DataVincita, Squadra)
-
-Trofeo_Squadra(
-Nome 		varchar(20)	NOT NULL,
-DataVincita	Date		NOT NULL,
-Squadra		varchar(20)	NOT NULL,
-
-CONSTRAINT PK_Trofeo_Squadra
-  PRIMARY KEY(Nome, DataVincita),
-FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
-
-
-Trofeo_Squadra_Calciatore(Nome, DataVincita, Squadra, CalciatoreV)
-
-Trofeo_Squadra_Calciatore(
-Nome		varchar(20)	NOT NULL,
-DataVincita	Date		NOT NULL,
-Squadra		varchar(20)	NOT NULL,
-CalciatoreV	varchar(14)	NOT NULL,
-
-FOREIGN KEY(Nome) REFERENCES Trofeo_Squadra(Nome),
-FOREIGN KEY(DataVincita) REFERENCES Trofeo_Squadra(DataVincita),
-FOREIGN KEY(CalciatoreV) REFERENCES Calciatore(ID_Giocatore),
-FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
-
-
-Squadre(NomeSquadra, Nazionalita)
-
-Squadre(
-NomeSquadra	varchar(20)	NOT NULL,
-Nazionalita	varchar(20)	NOT NULL,
-NomeSponsor	varchar(20)	NOT NULL,
-
-PRIMARY KEY(NomeSquadra)
-FOREIGN KEY(NomeSponsor) REFERENCES SponsorTec(Nome));
-
-Rosa(Anno, ID_Giocatore, Squadra)
-
-CRATE TABLE Rosa(
-Anno  date  NOT NULL,
-ID_Giocatore  varchar(20)  NOT NULL,
-Squadra  varchar(20) NOT NULL,
-
-FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore),
-FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
-)
-
-
-Sponsor_Secondari(Nome, Finanziamento);
-
-Sponsor_Secondari(
-Nome 		varchar(20)	NOT NULL,
-Finanziamento	int		NOT NULL,
-
-PRIMARY KEY(Nome));
-
-
-SponsorTec(Nome, Finanziamento);
-
-SponsorTec(
-Nome		varchar(20)	NOT NULL,
-Finanziamento	bigint		NOT NULL,
-
-PRIMARY KEY(Nome));
-
-
-Competizioni_Non_Nazionali(Nome, Tipo, Anno);
-
-Competizioni_Non_Nazionali(
-Nome 		varchar(20)	NOT NULL,
-Tipo		varchar(20)	NOT NULL,
-Anno		Date		NOT NULL,
-
-CONSTRAINT PK_Comp_Non_Naz
-  PRIMARY KEY(Nome, Anno));
-
-
-Competizioni_Nazionali(Nome, Tipo, Anno);
-
-Competizioni_Nazionali(
-Nome		varchar(20)	NOT NULL,
-Nazione		varchar(20)	NOT NULL,
-Anno		Date		NOT NULL,
-
-CONSTRAINT PK_Comp_Naz
-  PRIMARY KEY(Nome, Anno));
-
-
-Squadra_Gioca_In_Competizioni_Non_Nazionali(Squadra, Nome, Anno);
+Squadra_Gioca_In_Competizioni_Non_Nazionali(Squadra{FK -> Squadre}{PK}, Nome{FK -> Comp_Non_Nazionali}{PK}, Anno{FK -> Comp_Non_Nazionali}{PK});
 
 Squadra_Gioca_In_Competizioni_Non_Nazionali(
 Squadra		varchar(20)	NOT NULL,
