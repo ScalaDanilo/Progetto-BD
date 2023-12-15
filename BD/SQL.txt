@@ -162,7 +162,9 @@ CalciatoreV	varchar(14)	NOT NULL,
 FOREIGN KEY(Nome) REFERENCES Trofeo_Squadra(Nome),
 FOREIGN KEY(DataVincita) REFERENCES Trofeo_Squadra(DataVincita),
 FOREIGN KEY(CalciatoreV) REFERENCES Calciatore(ID_Giocatore),
-FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
+FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
+
+PRIMARY KEY(Nome, DataVincita, CalciatoreV));
 
 -------------------------------------------------------------
 
@@ -174,7 +176,9 @@ Anno		Date		NOT NULL,
 
 FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
 FOREIGN KEY(Nome) REFERENCES Competizioni_Nazionali(Nome),
-FOREIGN KEY(Anno) REFERENCES Competizioni_Nazionali(Anno));
+FOREIGN KEY(Anno) REFERENCES Competizioni_Nazionali(Anno),
+
+PRIMARY KEY(Nome, Anno));
 
 -------------------------------------------------------------
 
@@ -185,5 +189,7 @@ Anno		Date		NOT NULL,
 
 FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
 FOREIGN KEY(Nome) REFERENCES Competizioni_Nazionali(Nome),
-FOREIGN KEY(Anno) REFERENCES Competizioni_Nazionali(Anno));
+FOREIGN KEY(Anno) REFERENCES Competizioni_Nazionali(Anno),
+
+PRIMARY KEY(Nome, Anno));
 
