@@ -209,18 +209,13 @@ INSERT INTO Squadra_Gioca_In_Competizioni_Non_Nazionali (Squadra, Nome, Anno)
 VALUES
   ('Juventus', 'Champions League', '2022-2023'),
   ('Barcelona', 'Champions League', '2022-2023'),
-  ('AC Milan', 'Coppa Libertadores', '2022-2023'),
   ('Manchester United', 'Coppa Libertadores', '2022-2023'),
   ('Bayern Munich', 'AFC Champions League', '2022-2023'),
   ('Paris Saint-Germain', 'CONCACAF Champions League', '2022-2023'),
-  ('Inter Milan', 'Coppa Sudamericana', '2022-2023'),
   ('Ajax', 'OFC Champions League', '2022-2023'),
-  ('Porto', 'Coppa AFC', '2022-2023'),
-  ('Zenit St. Petersburg', 'CONCACAF League', '2022-2023'),
   ('AC Milan', 'Coppa Libertadores', '2022-2023'),
   ('Manchester United', 'AFC Champions League', '2022-2023'),
   ('Inter Milan', 'Coppa Sudamericana', '2022-2023'),
-  ('Ajax', 'OFC Champions League', '2022-2023'),
   ('Porto', 'Coppa AFC', '2022-2023'),
   ('Zenit St. Petersburg', 'CONCACAF League', '2022-2023');
 
