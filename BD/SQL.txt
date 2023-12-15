@@ -42,7 +42,9 @@ Giocatore	varchar(14)	NOT NULL,
 Tipo		varchar(20)	NOT NULL,
 
 FOREIGN KEY(Giocatore) REFERENCES Calciatore(ID_Giocatore),
-FOREIGN KEY(Tipo) REFERENCES Feature_caratteristiche(Tipologia));
+FOREIGN KEY(Tipo) REFERENCES Feature_caratteristiche(Tipologia),
+
+PRIMARY KEY(Giocatore, Tipo));
 
 -------------------------------------------------------------
 
