@@ -125,8 +125,10 @@ ID_Giocatore  char(14)  NOT NULL,
 Squadra  varchar(20) NOT NULL,
 
 FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore),
-FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra)
-);
+FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
+
+CONSTRAINT PK_Rosa
+  PRIMARY KEY(Anno, Squadra, ID_Giocatore));
 
 -------------------------------------------------------------
 
@@ -153,7 +155,10 @@ ID_Giocatore  varchar(20)  NOT NULL,
 ID_Militanza  varchar(20)  NOT NULL,
 
 FOREIGN KEY(ID_Militanza) REFERENCES Militanza(ID_Militanza),
-FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore));
+FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore),
+
+CONSTRAINT PK_GoalSubiti
+  PRIMARY KEY(ID_Militanza, ID_Giocatore));
 
 -------------------------------------------------------------
 
@@ -168,7 +173,8 @@ FOREIGN KEY(DataVincita) REFERENCES Trofeo_Squadra(DataVincita),
 FOREIGN KEY(CalciatoreV) REFERENCES Calciatore(ID_Giocatore),
 FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
 
-PRIMARY KEY(Nome, DataVincita, CalciatoreV));
+CONSTRAINT PK_Trofeo_Squadra_Calciatore
+  PRIMARY KEY(Nome, DataVincita, CalciatoreV));
 
 -------------------------------------------------------------
 
@@ -182,7 +188,8 @@ FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
 FOREIGN KEY(Nome) REFERENCES Competizioni_Nazionali(Nome),
 FOREIGN KEY(Anno) REFERENCES Competizioni_Nazionali(Anno),
 
-PRIMARY KEY(Nome, Anno));
+CONSTRAINT PK_Squadra_Gioca_In_Competizioni_Non_Nazionali
+  PRIMARY KEY(Nome, Anno));
 
 -------------------------------------------------------------
 
@@ -195,5 +202,6 @@ FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
 FOREIGN KEY(Nome) REFERENCES Competizioni_Nazionali(Nome),
 FOREIGN KEY(Anno) REFERENCES Competizioni_Nazionali(Anno),
 
-PRIMARY KEY(Nome, Anno));
+CONSTRAINT PK_Squadra_Gioca_In_Competizioni_Nazionali
+  PRIMARY KEY(Nome, Anno));
 
