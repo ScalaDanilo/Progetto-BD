@@ -129,6 +129,7 @@ VALUES
   ('Capocannoniere', '2022-12-10', 'CALC0000000007'),
   ('Miglior Attaccante', '2022-12-18', 'CALC0000000008'),
   ('Miglior Terzino', '2022-12-08', 'CALC0000000009'),
+  ('Miglior Portiere', '2022-12-25', 'CALC000000010');
   ('Miglior Portiere', '2022-12-25', 'CALC0000000010'),
   ('Pallone d\'Oro', '2022-12-15', 'CALC0000000011'),
   ('FIFA World Player', '2022-12-20', 'CALC0000000012'),
@@ -140,6 +141,7 @@ VALUES
   ('Miglior Giocatore Copa Libertadores', '2023-01-25', 'CALC0000000018'),
   ('Miglior Portiere Primeira Liga', '2023-02-01', 'CALC0000000019'),
   ('Capocannoniere Russian Premier League', '2023-02-05', 'CALC0000000020');
+
 
 -------------------------------------------------------------------------------------------------------
 
@@ -262,77 +264,77 @@ VALUES
 
 INSERT INTO Rosa (Anno, ID_Giocatore, Squadra)
 VALUES
-  ('2022-2023', 'CALC001', 'Juventus'),
-  ('2022-2023', 'CALC002', 'Barcelona'),
-  ('2022-2023', 'CALC003', 'AC Milan'),
-  ('2022-2023', 'CALC004', 'Manchester United'),
-  ('2022-2023', 'CALC005', 'Bayern Munich'),
-  ('2022-2023', 'CALC006', 'Paris Saint-Germain'),
-  ('2022-2023', 'CALC007', 'Inter Milan'),
-  ('2022-2023', 'CALC008', 'Ajax'),
-  ('2022-2023', 'CALC009', 'Porto'),
-  ('2022-2023', 'CALC010', 'Zenit St. Petersburg'),
-  ('2022-2023', 'CALC011', 'Juventus'),
-  ('2022-2023', 'CALC012', 'Barcelona'),
-  ('2022-2023', 'CALC013', 'AC Milan'),
-  ('2022-2023', 'CALC014', 'Manchester United'),
-  ('2022-2023', 'CALC015', 'Bayern Munich'),
-  ('2022-2023', 'CALC016', 'Paris Saint-Germain'),
-  ('2022-2023', 'CALC017', 'Inter Milan'),
-  ('2022-2023', 'CALC018', 'Ajax'),
-  ('2022-2023', 'CALC019', 'Porto'),
-  ('2022-2023', 'CALC020', 'Zenit St. Petersburg');
+  ('2022-2023', 'CALC0000000001', 'Juventus'),
+  ('2022-2023', 'CALC0000000002', 'Barcelona'),
+  ('2022-2023', 'CALC0000000003', 'AC Milan'),
+  ('2022-2023', 'CALC0000000004', 'Manchester United'),
+  ('2022-2023', 'CALC0000000005', 'Bayern Munich'),
+  ('2022-2023', 'CALC0000000006', 'Paris Saint-Germain'),
+  ('2022-2023', 'CALC0000000007', 'Inter Milan'),
+  ('2022-2023', 'CALC0000000008', 'Ajax'),
+  ('2022-2023', 'CALC0000000009', 'Porto'),
+  ('2022-2023', 'CALC0000000010', 'Zenit St. Petersburg'),
+  ('2022-2023', 'CALC0000000011', 'Juventus'),
+  ('2022-2023', 'CALC0000000012', 'Barcelona'),
+  ('2022-2023', 'CALC0000000013', 'AC Milan'),
+  ('2022-2023', 'CALC0000000014', 'Manchester United'),
+  ('2022-2023', 'CALC0000000015', 'Bayern Munich'),
+  ('2022-2023', 'CALC0000000016', 'Paris Saint-Germain'),
+  ('2022-2023', 'CALC0000000017', 'Inter Milan'),
+  ('2022-2023', 'CALC0000000018', 'Ajax'),
+  ('2022-2023', 'CALC0000000019', 'Porto'),
+  ('2022-2023', 'CALC0000000020', 'Zenit St. Petersburg');
 
 -------------------------------------------------------------------------------------------------------
 
 INSERT INTO Militanza (Inizio, Fine, ID_Militanza, Giocatore, Squadra, TiriSegnati, PartiteGiocate)
 VALUES
-  ('2022-01-01', '2023-01-01', 'MIL001', 'CALC001', 'Juventus', 20, 30),
-  ('2022-02-01', '2023-02-01', 'MIL002', 'CALC002', 'Barcelona', 15, 25),
-  ('2022-03-01', '2023-03-01', 'MIL003', 'CALC003', 'AC Milan', 25, 35),
-  ('2022-04-01', '2023-04-01', 'MIL004', 'CALC004', 'Manchester United', 18, 28),
-  ('2022-05-01', '2023-05-01', 'MIL005', 'CALC005', 'Bayern Munich', 22, 32),
-  ('2022-06-01', '2023-06-01', 'MIL006', 'CALC006', 'Paris Saint-Germain', 17, 27),
-  ('2022-07-01', '2023-07-01', 'MIL007', 'CALC007', 'Inter Milan', 23, 33),
-  ('2022-08-01', '2023-08-01', 'MIL008', 'CALC008', 'Ajax', 19, 29),
-  ('2022-09-01', '2023-09-01', 'MIL009', 'CALC009', 'Porto', 16, 26),
-  ('2022-10-01', '2023-10-01', 'MIL010', 'CALC010', 'Zenit St. Petersburg', 21, 31),
-  ('2022-01-01', '2023-01-01', 'MIL011', 'CALC011', 'Juventus', 18, 28),
-  ('2022-02-01', '2023-02-01', 'MIL012', 'CALC012', 'Barcelona', 22, 32),
-  ('2022-03-01', '2023-03-01', 'MIL013', 'CALC013', 'AC Milan', 15, 25),
-  ('2022-04-01', '2023-04-01', 'MIL014', 'CALC014', 'Manchester United', 20, 30),
-  ('2022-05-01', '2023-05-01', 'MIL015', 'CALC015', 'Bayern Munich', 14, 24),
-  ('2022-06-01', '2023-06-01', 'MIL016', 'CALC016', 'Paris Saint-Germain', 19, 29),
-  ('2022-07-01', '2023-07-01', 'MIL017', 'CALC017', 'Inter Milan', 16, 26),
-  ('2022-08-01', '2023-08-01', 'MIL018', 'CALC018', 'Ajax', 21, 31),
-  ('2022-09-01', '2023-09-01', 'MIL019', 'CALC019', 'Porto', 23, 33),
-  ('2022-10-01', '2023-10-01', 'MIL020', 'CALC020', 'Zenit St. Petersburg', 17, 27);
+  ('2022-01-01', '2023-01-01', 'MIL00000000001', 'CALC0000000001', 'Juventus', 20, 30),
+  ('2022-02-01', '2023-02-01', 'MIL00000000002', 'CALC0000000002', 'Barcelona', 15, 25),
+  ('2022-03-01', '2023-03-01', 'MIL00000000003', 'CALC0000000003', 'AC Milan', 25, 35),
+  ('2022-04-01', '2023-04-01', 'MIL00000000004', 'CALC0000000004', 'Manchester United', 18, 28),
+  ('2022-05-01', '2023-05-01', 'MIL00000000005', 'CALC0000000005', 'Bayern Munich', 22, 32),
+  ('2022-06-01', '2023-06-01', 'MIL00000000006', 'CALC0000000006', 'Paris Saint-Germain', 17, 27),
+  ('2022-07-01', '2023-07-01', 'MIL00000000007', 'CALC0000000007', 'Inter Milan', 23, 33),
+  ('2022-08-01', '2023-08-01', 'MIL00000000008', 'CALC0000000008', 'Ajax', 19, 29),
+  ('2022-09-01', '2023-09-01', 'MIL00000000009', 'CALC0000000009', 'Porto', 16, 26),
+  ('2022-10-01', '2023-10-01', 'MIL00000000010', 'CALC0000000010', 'Zenit St. Petersburg', 21, 31),
+  ('2022-01-01', '2023-01-01', 'MIL00000000011', 'CALC0000000011', 'Juventus', 18, 28),
+  ('2022-02-01', '2023-02-01', 'MIL00000000012', 'CALC0000000012', 'Barcelona', 22, 32),
+  ('2022-03-01', '2023-03-01', 'MIL00000000013', 'CALC0000000013', 'AC Milan', 15, 25),
+  ('2022-04-01', '2023-04-01', 'MIL00000000014', 'CALC0000000014', 'Manchester United', 20, 30),
+  ('2022-05-01', '2023-05-01', 'MIL00000000015', 'CALC0000000015', 'Bayern Munich', 14, 24),
+  ('2022-06-01', '2023-06-01', 'MIL00000000016', 'CALC0000000016', 'Paris Saint-Germain', 19, 29),
+  ('2022-07-01', '2023-07-01', 'MIL00000000017', 'CALC0000000017', 'Inter Milan', 16, 26),
+  ('2022-08-01', '2023-08-01', 'MIL00000000018', 'CALC0000000018', 'Ajax', 21, 31),
+  ('2022-09-01', '2023-09-01', 'MIL00000000019', 'CALC0000000019', 'Porto', 23, 33),
+  ('2022-10-01', '2023-10-01', 'MIL00000000020', 'CALC0000000020', 'Zenit St. Petersburg', 17, 27);
 
 -------------------------------------------------------------------------------------------------------
 
 INSERT INTO GoalSubiti (GoalSubiti, ID_Giocatore, ID_Militanza)
 VALUES
-  (10, 'CALC001', 'MIL001'),
-  (15, 'CALC002', 'MIL002'),
-  (12, 'CALC003', 'MIL003'),
-  (8, 'CALC004', 'MIL004'),
-  (11, 'CALC005', 'MIL005'),
-  (9, 'CALC006', 'MIL006'),
-  (14, 'CALC007', 'MIL007'),
-  (7, 'CALC008', 'MIL008'),
-  (13, 'CALC009', 'MIL009'),
-  (10, 'CALC010', 'MIL010');
+  (10, 'CALC0000000001', 'MIL0000000001'),
+  (15, 'CALC0000000002', 'MIL0000000002'),
+  (12, 'CALC0000000003', 'MIL0000000003'),
+  (8, 'CALC0000000004', 'MIL0000000004'),
+  (11, 'CALC0000000005', 'MIL0000000005'),
+  (9, 'CALC0000000006', 'MIL0000000006'),
+  (14, 'CALC0000000007', 'MIL0000000007'),
+  (7, 'CALC0000000008', 'MIL0000000008'),
+  (13, 'CALC0000000009', 'MIL0000000009'),
+  (10, 'CALC0000000010', 'MIL0000000010');
 
 -------------------------------------------------------------------------------------------------------
 
 INSERT INTO Trofeo_Squadra_Calciatore (Nome, DataVincita, Squadra, CalciatoreV)
 VALUES
-  ('Coppa Italia', '2022-04-30', 'AC Milan', 'CALC003'),
-  ('Premier League', '2022-05-20', 'Manchester United', 'CALC004'),
-  ('Serie A', '2022-05-30', 'Inter Milan', 'CALC007'),
-  ('Eredivisie', '2022-06-05', 'Ajax', 'CALC008'),
-  ('Primeira Liga', '2022-06-15', 'Porto', 'CALC009'),
-  ('Russian Premier League', '2022-06-20', 'Zenit St. Petersburg', 'CALC010');
+  ('Coppa Italia', '2022-04-30', 'AC Milan', 'CALC0000000003'),
+  ('Premier League', '2022-05-20', 'Manchester United', 'CALC0000000004'),
+  ('Serie A', '2022-05-30', 'Inter Milan', 'CALC0000000007'),
+  ('Eredivisie', '2022-06-05', 'Ajax', 'CALC0000000008'),
+  ('Primeira Liga', '2022-06-15', 'Porto', 'CALC0000000009'),
+  ('Russian Premier League', '2022-06-20', 'Zenit St. Petersburg', 'CALC0000000010');
 
 -------------------------------------------------------------------------------------------------------
 
