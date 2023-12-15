@@ -141,11 +141,9 @@ Squadra		varchar(20)	NOT NULL,
 TiriSegnati	int		NOT NULL,
 PartiteGiocate	int		NOT NULL,
 
-
 PRIMARY KEY(ID_Militanza),
 FOREIGN KEY(Squadra) REFERENCES SquadRe(NomeSquadra),
 FOREIGN KEY(Giocatore) REFERENCES Calciatore(ID_Giocatore));
-
 
 -------------------------------------------------------------
 
@@ -177,7 +175,6 @@ CONSTRAINT PK_Trofeo_Squadra_Calciatore
   PRIMARY KEY(Nome, DataVincita, CalciatoreV));
 
 -------------------------------------------------------------
-
 
 CREATE TABLE Squadra_Gioca_In_Competizioni_Non_Nazionali(
 Squadra		varchar(20)	NOT NULL,
