@@ -205,4 +205,4 @@ FOREIGN KEY(Anno) REFERENCES Competizioni_Nazionali(Anno),
 CONSTRAINT PK_Squadra_Gioca_In_Competizioni_Nazionali
   PRIMARY KEY(Nome, Anno));
 
-prova per la commit in contemporaneo
+fine prova
