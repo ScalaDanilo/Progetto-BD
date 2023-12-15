@@ -5,7 +5,7 @@ Nascita		Date		NOT NULL,
 PiedePR		varchar(10)	NOT NULL,
 DataRitiro	Date      Default NULL,
 Nazionalita	varchar(20)	NOT NULL,
-ID_Giocatore	varchar(14)	NOT NULL,
+ID_Giocatore	char(14)	NOT NULL,
 ValoreMercato	int		NOT NULL,
 
 PRIMARY KEY(ID_Giocatore));
