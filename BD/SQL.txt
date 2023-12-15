@@ -185,8 +185,8 @@ Nome		varchar(20)	NOT NULL,
 Anno		Date		NOT NULL,
 
 FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
-FOREIGN KEY(Nome) REFERENCES Competizioni_Nazionali(Nome),
-FOREIGN KEY(Anno) REFERENCES Competizioni_Nazionali(Anno),
+FOREIGN KEY(Nome) REFERENCES Competizioni_Non_Nazionali(Nome),
+FOREIGN KEY(Anno) REFERENCES Competizioni_Non_Nazionali(Anno),
 
 CONSTRAINT PK_Squadra_Gioca_In_Competizioni_Non_Nazionali
   PRIMARY KEY(Nome, Anno));
