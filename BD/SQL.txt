@@ -83,7 +83,7 @@ Nome 		varchar(20)	NOT NULL,
 Finanziamento	int		NOT NULL,
 Squadra  varchar(20) NOT NULL,
 
-CONSTRAIN PK_Sponsor_Secondari
+CONSTRAINT PK_Sponsor_Secondari
   PRIMARY KEY(Nome, Squadra),
 FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
 
