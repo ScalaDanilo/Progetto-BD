@@ -104,14 +104,12 @@ CONSTRAINT PK_Comp_Naz
 
 -------------------------------------------------------------
 
-CREATE TABLE Squadre(NomeSquadra, Nazionalita)
-
-Squadre(
+CREATE TABLE Squadre(
 NomeSquadra	varchar(20)	NOT NULL,
 Nazionalita	varchar(20)	NOT NULL,
 NomeSponsor	varchar(20)	NOT NULL,
 
-PRIMARY KEY(NomeSquadra)
+PRIMARY KEY(NomeSquadra),
 FOREIGN KEY(NomeSponsor) REFERENCES SponsorTec(Nome));
 
 -------------------------------------------------------------
