@@ -221,8 +221,6 @@ VALUES
 
 -------------------------------------------------------------------------------------------------------
 
-INSERT INTO Squadra_Gioca_In_Competizioni_Nazionali (Squadra, Nome, Anno)
-VALUES
   INSERT INTO Squadra_Gioca_In_Competizioni_Nazionali (Squadra, Nome, Anno)
 VALUES
   ('Juventus', 'Serie A', '2022-2023'),
