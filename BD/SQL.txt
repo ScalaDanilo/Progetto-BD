@@ -125,7 +125,8 @@ ID_Giocatore  char(14)  NOT NULL,
 Squadra  varchar(20) NOT NULL,
 
 FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore),
-FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
+FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra)
+);
 
 -------------------------------------------------------------
 
