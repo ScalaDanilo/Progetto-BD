@@ -143,7 +143,7 @@ PartiteGiocate	int		NOT NULL,
 
 
 PRIMARY KEY(ID_Militanza),
-FOREIGN KEY(Squadra) REFERENCES Squarde(NomeSquadra),
+FOREIGN KEY(Squadra) REFERENCES SquadRe(NomeSquadra),
 FOREIGN KEY(Giocatore) REFERENCES Calciatore(ID_Giocatore));
 
 
