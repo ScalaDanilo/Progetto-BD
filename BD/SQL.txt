@@ -197,3 +197,4 @@ FOREIGN KEY(Anno) REFERENCES Competizioni_Nazionali(Anno),
 
 PRIMARY KEY(Nome, Anno));
 
+prova per la commit in contemporaneo
