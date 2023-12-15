@@ -223,6 +223,8 @@ VALUES
 
 INSERT INTO Squadra_Gioca_In_Competizioni_Nazionali (Squadra, Nome, Anno)
 VALUES
+  INSERT INTO Squadra_Gioca_In_Competizioni_Nazionali (Squadra, Nome, Anno)
+VALUES
   ('Juventus', 'Serie A', '2022-2023'),
   ('Barcelona', 'La Liga', '2022-2023'),
   ('AC Milan', 'Serie A', '2022-2023'),
@@ -232,13 +234,7 @@ VALUES
   ('Inter Milan', 'Serie A', '2022-2023'),
   ('Ajax', 'Eredivisie', '2022-2023'),
   ('Porto', 'Primeira Liga', '2022-2023'),
-  ('Zenit St. Petersburg', 'Russian Premier League', '2022-2023'),
-  ('Juventus', 'Serie A', '2022-2023'),
-  ('Barcelona', 'La Liga', '2022-2023'),
-  ('AC Milan', 'Serie A', '2022-2023'),
-  ('Manchester United', 'Premier League', '2022-2023'),
-  ('Bayern Munich', 'Bundesliga', '2022-2023'),
-  ('Paris Saint-Germain', 'Ligue 1', '2022-2023');
+  ('Zenit St. Petersburg', 'Russian Premier League', '2022-2023');
 
 -------------------------------------------------------------------------------------------------------
 
