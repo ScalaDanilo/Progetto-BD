@@ -1,45 +1,45 @@
-CREATE TABLE Calciatore (
-Nome		varchar(20)	NOT NULL,
-Cognome 	varchar(20)	NOT NULL,
+1 CREATE TABLE Calciatore (
+Nome		varchar(100)	NOT NULL,
+Cognome 	varchar(100)	NOT NULL,
 Nascita		Date		NOT NULL,
-PiedePR		varchar(10)	NOT NULL,
-DataRitiro	Date      Default NULL,
-Nazionalita	varchar(20)	NOT NULL,
-ID_Giocatore	char(14)	NOT NULL,
-ValoreMercato	int		NOT NULL,
+PiedePR		varchar(50)	NOT NULL,
+DataRitiro	Date      	Default NULL,
+Nazionalita	varchar(100)	NOT NULL,
+ID_Giocatore	char(20)	NOT NULL,
+ValoreMercato	int,		
 
 PRIMARY KEY(ID_Giocatore));
 
 -------------------------------------------------------------
 
-CREATE TABLE Ruolo(
+2 CREATE TABLE Ruolo(
 Ruolo  varchar(200) NOT NULL,
-ID_Giocatore  char(14)  NOT NULL,
+ID_Giocatore  char(20)  NOT NULL,
 
 FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore),
 PRIMARY KEY(Ruolo, ID_Giocatore));
 
 -------------------------------------------------------------
 
-CREATE TABLE Utente(
+3 CREATE TABLE Utente(
 Login		varchar(30)	NOT NULL,
-Password	password	NOT NULL,
+Password	varchar(30)	NOT NULL,
 Priority int  NOT NULL,
 
 PRIMARY KEY(Login));
 
 -------------------------------------------------------------
 
-CREATE TABLE Feature_Caratteristiche(
-Tipologia	varchar(20)	NOT NULL,
+4 CREATE TABLE Feature_Caratteristiche(
+Tipologia	varchar(100)	NOT NULL,
 
 PRIMARY KEY(Tipologia));
 
 -------------------------------------------------------------
 
-CREATE TABLE Giocatore_Possiede_Feature_Caratteristiche(
-Giocatore	varchar(14)	NOT NULL,
-Tipo		varchar(20)	NOT NULL,
+5 CREATE TABLE Giocatore_Possiede_Feature_Caratteristiche(
+Giocatore	varchar(20)	NOT NULL,
+Tipo		varchar(100)	NOT NULL,
 
 FOREIGN KEY(Giocatore) REFERENCES Calciatore(ID_Giocatore),
 FOREIGN KEY(Tipo) REFERENCES Feature_caratteristiche(Tipologia),
@@ -48,40 +48,40 @@ PRIMARY KEY(Giocatore, Tipo));
 
 -------------------------------------------------------------
 
-CREATE TABLE Trofeo_Individuale(
-Nome 		varchar(20)	NOT NULL,
-DataVincita	Date		NOT NULL,
-Vincitore	varchar(14)	NOT NULL,
+6 CREATE TABLE Trofeo_Individuale(
+Nome 		varchar(50)	NOT NULL,
+AnnoVincita	int 		NOT NULL,
+Vincitore	varchar(24)	NOT NULL,
 
 CONSTRAINT PK_Trofeo
-  PRIMARY KEY(Nome, DataVincita),
+  PRIMARY KEY(Nome, AnnoVincita),
 FOREIGN KEY(Vincitore) REFERENCES Calciatore(ID_Giocatore));
 
 -------------------------------------------------------------
 
-CREATE TABLE Trofeo_Squadra(
-Nome 		varchar(20)	NOT NULL,
-DataVincita	Date		NOT NULL,
-Squadra		varchar(20)	NOT NULL,
+10 CREATE TABLE Trofeo_Squadra(
+Nome 		varchar(50)	NOT NULL,
+AnnoVincita     int		NOT NULL,
+Squadra		varchar(100)	NOT NULL,
 
 CONSTRAINT PK_Trofeo_Squadra
-  PRIMARY KEY(Nome, DataVincita),
+  PRIMARY KEY(Nome, AnnoVincita),
 FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
 
 -------------------------------------------------------------
 
-CREATE TABLE SponsorTec(
-Nome		varchar(20)	NOT NULL,
-Finanziamento	bigint		NOT NULL,
+7 CREATE TABLE SponsorTec(
+Nome		varchar(100)	NOT NULL,
+Finanziamento	bigint		
 
 PRIMARY KEY(Nome));
 
 -------------------------------------------------------------
 
-CREATE TABLE Sponsor_Secondari(
-Nome 		varchar(20)	NOT NULL,
-Finanziamento	int		NOT NULL,
-Squadra  varchar(20) NOT NULL,
+9 CREATE TABLE Sponsor_Secondari(
+Nome 		varchar(100)	NOT NULL,
+Finanziamento	int,		
+Squadra  	varchar(100) 	NOT NULL,
 
 CONSTRAINT PK_Sponsor_Secondari
   PRIMARY KEY(Nome, Squadra),
@@ -89,40 +89,46 @@ FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
 
 -------------------------------------------------------------
 
-CREATE TABLE Competizioni_Non_Nazionali(
-Nome 		varchar(20)	NOT NULL,
-Tipo		varchar(20)	NOT NULL,
-Anno		Date		NOT NULL,
+11 CREATE TABLE Competizioni_Non_Nazionali(
+Nome 		varchar(100)	NOT NULL,
+Tipo		varchar(100)	NOT NULL,
+Anno		int		NOT NULL,
+NomeTrofeo	varchar(50)	NOT NULL,
+AnnoVincita	int		NOT NULL,
 
 CONSTRAINT PK_Comp_Non_Naz
-  PRIMARY KEY(Nome, Anno));
+  PRIMARY KEY(Nome, Anno),
+FOREIGN KEY(NomeTrofeo, AnnoVincita) REFERENCES Trofeo_Squadra(nome, annoVincita));
 
 -------------------------------------------------------------
 
-CREATE TABLE Competizioni_Nazionali(
-Nome		varchar(20)	NOT NULL,
-Nazione		varchar(20)	NOT NULL,
-Anno		Date		NOT NULL,
+12 CREATE TABLE Competizioni_Nazionali(
+Nome		varchar(100)	NOT NULL,
+Nazione		varchar(100)	NOT NULL,
+Anno		int		NOT NULL,
+NomeTrofeo	varchar(100)	NOT NULL,
+AnnoVincita	int		NOT NULL,
 
 CONSTRAINT PK_Comp_Naz
-  PRIMARY KEY(Nome, Anno));
+  PRIMARY KEY(Nome, Anno),
+FOREIGN KEY(NomeTrofeo, AnnoVincita) REFERENCES Trofeo_Squadra(nome, annoVincita));
 
 -------------------------------------------------------------
 
-CREATE TABLE Squadre(
-NomeSquadra	varchar(20)	NOT NULL,
-Nazionalita	varchar(20)	NOT NULL,
-NomeSponsor	varchar(20)	NOT NULL,
+8 CREATE TABLE Squadre(
+NomeSquadra	varchar(100)	NOT NULL,
+Nazionalita	varchar(100)	NOT NULL,
+NomeSponsor	varchar(100)	NOT NULL,
 
 PRIMARY KEY(NomeSquadra),
 FOREIGN KEY(NomeSponsor) REFERENCES SponsorTec(Nome));
 
 -------------------------------------------------------------
 
-CREATE TABLE Rosa(
-Anno  date  NOT NULL,
-ID_Giocatore  char(14)  NOT NULL,
-Squadra  varchar(20) NOT NULL,
+13 CREATE TABLE Rosa(
+Anno  varchar(20)	NOT NULL,
+ID_Giocatore  char(20)  NOT NULL,
+Squadra  varchar(100) 	NOT NULL,
 
 FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore),
 FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
@@ -132,12 +138,12 @@ CONSTRAINT PK_Rosa
 
 -------------------------------------------------------------
 
-CREATE TABLE Militanza (
-Inizio		Date		NOT NULL,		
-Fine		Date,
-ID_Militanza	char(14)	NOT NULL,
-Giocatore	char(14)	NOT NULL,
-Squadra		varchar(20)	NOT NULL,
+14 CREATE TABLE Militanza (
+Inizio		varchar(20)	NOT NULL,		
+Fine		varchar(20),
+ID_Militanza	char(20)	NOT NULL,
+Giocatore	char(20)	NOT NULL,
+Squadra		varchar(100)	NOT NULL,
 TiriSegnati	int		NOT NULL,
 PartiteGiocate	int		NOT NULL,
 
@@ -147,7 +153,7 @@ FOREIGN KEY(Giocatore) REFERENCES Calciatore(ID_Giocatore));
 
 -------------------------------------------------------------
 
-CREATE TABLE GoalSubiti(
+15 CREATE TABLE GoalSubiti(
 GoalSubiti  int  NOT NULL,
 ID_Giocatore  varchar(20)  NOT NULL,
 ID_Militanza  varchar(20)  NOT NULL,
@@ -160,25 +166,25 @@ CONSTRAINT PK_GoalSubiti
 
 -------------------------------------------------------------
 
-CREATE TABLE Trofeo_Squadra_Calciatore(
-Nome		varchar(20)	NOT NULL,
-DataVincita	Date		NOT NULL,
-Squadra		varchar(20)	NOT NULL,
-CalciatoreV	varchar(14)	NOT NULL,
+16 CREATE TABLE Trofeo_Squadra_Calciatore(
+Nome		varchar(100)	NOT NULL,
+AnnoVincita	int		NOT NULL,
+Squadra		varchar(100)	NOT NULL,
+CalciatoreV	varchar(20)	NOT NULL,
 
-FOREIGN KEY(Nome, DataVincita) REFERENCES Trofeo_Squadra(Nome, DataVincita),
+FOREIGN KEY(Nome, AnnoVincita) REFERENCES Trofeo_Squadra(Nome, AnnoVincita),
 FOREIGN KEY(CalciatoreV) REFERENCES Calciatore(ID_Giocatore),
 FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
 
 CONSTRAINT PK_Trofeo_Squadra_Calciatore
-  PRIMARY KEY(Nome, DataVincita, CalciatoreV));
+  PRIMARY KEY(Nome, AnnoVincita, CalciatoreV));
 
 -------------------------------------------------------------
 
-CREATE TABLE Squadra_Gioca_In_Competizioni_Non_Nazionali(
-Squadra		varchar(20)	NOT NULL,
-Nome		varchar(20)	NOT NULL,
-Anno		Date		NOT NULL,
+17 CREATE TABLE Squadra_Gioca_In_Competizioni_Non_Nazionali(
+Squadra		varchar(100)	NOT NULL,
+Nome		varchar(100)	NOT NULL,
+Anno		int		NOT NULL,
 
 FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
 FOREIGN KEY(Nome, Anno) REFERENCES Competizioni_Non_Nazionali(Nome, Anno),
@@ -189,10 +195,10 @@ CONSTRAINT PK_Squadra_Gioca_In_Competizioni_Non_Nazionali
 
 -------------------------------------------------------------
 
-CREATE TABLE Squadra_Gioca_In_Competizioni_Nazionali(
-Squadra		varchar(20)	NOT NULL,
-Nome		varchar(20)	NOT NULL,
-Anno		Date		NOT NULL,
+18 CREATE TABLE Squadra_Gioca_In_Competizioni_Nazionali(
+Squadra		varchar(100)	NOT NULL,
+Nome		varchar(100)	NOT NULL,
+Anno		int	NOT NULL,
 
 FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
 FOREIGN KEY(Nome, Anno) REFERENCES Competizioni_Nazionali(Nome, Anno),
