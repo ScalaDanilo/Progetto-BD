@@ -1,1 +1,43 @@
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION verification(login IN VARCHAR(50), pass IN VARCHAR(50)) 
+RETURNS INT AS $$
+DECLARE
+    priority_found INT;
+BEGIN
+    SELECT priority INTO priority_found
+    FROM UTENTE
+    WHERE UTENTE.login = verification.login AND UTENTE.password = verification.pass;
 
+    IF FOUND THEN
+        RETURN priority_found;
+    ELSE
+        RETURN -1; -- Utente non trovato
+    END IF;
+END;
+$$
+LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION convRuolo(ruoli IN VARCHAR(100)) 
+RETURN VARCHAR(20) AS $$
+DECLARE
+	pos INT;
+	ruolo VARCHAR(20);
+BEGIN
+	pos := INSTR(ruoli, '_', 1);
+	
+	ruolo := SUBSTR (ruoli, 1, pos - 1);
+	
+	RETURN ruolo;
+END; 
+$$
+LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE TRIGGER checkPortiere AS
+BEFORE INSERT ON goalsubiti
+FOR EACH ROW
+DECLARE
+	ruolo VARCHAR(100);
+BEGIN
+	
+END;
+----------------------------------------------------------------------------------------------------------------
