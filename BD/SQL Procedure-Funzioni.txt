@@ -25,7 +25,11 @@ DECLARE
 BEGIN
 	pos := INSTR(ruoli, '_', 1);
 	
-	ruolo := SUBSTR (ruoli, 1, pos - 1);
+	IF pos > 0 THEN
+		ruolo := SUBSTR (ruoli, 1, pos - 1);
+	ELSE
+		ruolo := SUBSTR (ruoli, 1);
+	END IF;
 	
 	RETURN ruolo;
 END; 
@@ -36,8 +40,11 @@ CREATE OR REPLACE TRIGGER checkPortiere AS
 BEFORE INSERT ON goalsubiti
 FOR EACH ROW
 DECLARE
-	ruolo VARCHAR(100);
+	ruolo VARCHAR(20);
 BEGIN
-	
+	ruolo := convRuolo(SELECT R.ruolo FROM RUOLO AS R, CALCIATORE AS C WHERE R.id_giocatore = C.id_giocatore AND C.id_giocatore = NEW.id_giocatore);
+	IF ruolo <> 'portiere' THEN
+		RAISE EXCEPTION('Il giocatore che stai inserendo non è portiere.');
+	END IF;
 END;
 ----------------------------------------------------------------------------------------------------------------
