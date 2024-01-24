@@ -28,7 +28,7 @@ BEGIN
 	IF pos > 0 THEN
 		ruolo := SUBSTR (ruoli, 1, pos - 1);
 	ELSE
-		ruolo := SUBSTR (ruoli, 1);
+		ruolo := ruoli;
 	END IF;
 	
 	RETURN ruolo;
@@ -65,8 +65,8 @@ BEGIN
     WHERE squadra = NEW.squadra
     GROUP BY squadra, anno;
 
-    IF numGiocatori < 16 OR numGiocatori > 23 THEN
-        RAISE EXCEPTION 'La squadra ha troppi/troppi pochi giocatori per partecipare alla competizione.';
+    IF numGiocatori < 16 THEN
+        RAISE EXCEPTION 'La squadra ha troppi pochi giocatori per partecipare alla competizione.';
     END IF;
 
     RETURN NEW;
