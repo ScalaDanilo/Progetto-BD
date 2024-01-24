@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION verification(login IN VARCHAR(50), pass IN VARCHAR(50)) 
-RETURNS INT AS $$
+RETURNS INT AS $verification$
 DECLARE
     priority_found INT;
 BEGIN
@@ -18,7 +18,7 @@ $$
 LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION convRuolo(ruoli IN VARCHAR(100)) 
-RETURN VARCHAR(20) AS $$
+RETURN VARCHAR(20) AS $convRuolo$
 DECLARE
 	pos INT;
 	ruolo VARCHAR(20);
@@ -47,4 +47,34 @@ BEGIN
 		RAISE EXCEPTION('Il giocatore che stai inserendo non è portiere.');
 	END IF;
 END;
+----------------------------------------------------------------------------------------------------------------
+CREATE TRIGGER inserimentoRosa
+AFTER INSERT ON Militanza
+FOR EACH ROW
+BEGIN
+	INSERT INTO rosa (anno, id_giocatore, squadra)
+	VALUES (NEW.inizio, NEW.id_giocatore, NEW.squadra);
+END;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION controllaNumGiocatoriFunction() RETURNS TRIGGER AS $$
+DECLARE
+    numGiocatori INT;
+BEGIN
+    SELECT COUNT(id_giocatore) INTO numGiocatori
+    FROM rosa
+    WHERE squadra = NEW.squadra
+    GROUP BY squadra, anno;
+
+    IF numGiocatori < 16 OR numGiocatori > 23 THEN
+        RAISE EXCEPTION 'La squadra ha troppi/troppi pochi giocatori per partecipare alla competizione.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE TRIGGER controllaNumGiocatori
+BEFORE INSERT ON squadra_gioca_in_competizioni_nazionali
+FOR EACH ROW
+EXECUTE FUNCTION controllaNumGiocatoriFunction();
 ----------------------------------------------------------------------------------------------------------------
