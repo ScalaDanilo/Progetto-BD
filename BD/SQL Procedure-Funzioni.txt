@@ -463,3 +463,44 @@ BEGIN
 END:
 $$ LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+
+-- Crea una funzione che sarà eseguita periodicamente 
+CREATE OR REPLACE FUNCTION esegui_logica_ogni_6_mesi() 
+RETURNS VOID AS $$ 
+	dataCorrente date := NOW();
+BEGIN   
+	IF EXTRACT(MONTH FROM dataCorrente) = 12 THEN  
+		FOR squadra IN (SELECT nomesquadra FROM squadre) LOOP
+			FOR militanza IN (SELECT * 
+					  		  FROM militanza AS m 
+					  		  WHERE (m.squadra = squadra) AND (fine IS NULL OR EXTRACT(YEAR FROM fine) > EXTRACT(YEAR FROM dataCorrente));
+							  LOOP
+							  
+							  INSERT INTO rosa(id_giocatore, squadra, anno)
+							  VALUES (militanza.id_giocatore, squadra, dataCorrente);
+							  
+							  RAISE NOTICE 'Eseguito in sessione invernale: %', now(); 
+			END LOOP;
+		END LOOP;
+	ELSE 
+		FOR squadra IN (SELECT nomesquadra FROM squadre) LOOP
+			FOR militanza IN (SELECT * 
+					  		  FROM militanza AS m 
+					  		  WHERE (m.squadra = squadra) AND (fine IS NULL OR EXTRACT(YEAR FROM fine) >= EXTRACT(YEAR FROM dataCorrente) 
+															   			   AND EXTRACT(MONTH FROM fine) > '1');
+							  LOOP
+							  
+							  INSERT INTO rosa(id_giocatore, squadra, anno)
+							  VALUES (militanza.id_giocatore, squadra, dataCorrente);
+							  
+							  RAISE NOTICE 'Eseguito in sessione primaverile: %', now();  
+			END LOOP;
+		END LOOP;
+END; 
+$$ LANGUAGE plpgsql;  
+
+-- Pianifica l'esecuzione della funzione ogni 6 mesi 
+SELECT cron.schedule('0 0 31 12,6 *', 'SELECT esegui_logica_ogni_6_mesi()');
+----------------------------------------------------------------------------------------------------------------
+													 
