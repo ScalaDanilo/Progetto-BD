@@ -103,6 +103,7 @@ DECLARE
     michele Calciatore%ROWTYPE;
     micheleSquad Squadre%ROWTYPE;
     alfredoSponsor Squadra%ROWTYPE;
+    numGiocatori INT;
 BEGIN
     	-- Controllo se esiste già il calciatore
 	SELECT *
@@ -183,35 +184,46 @@ BEGIN
         	ELSE
 			-- Se la nazionalità è null, l'admin non ha inserito la squadra, ma ha trovato una squadra già esistente
 
-            		id_gio := genera_id('Calciatore', 'id_giocatore');
+			SELECT COUNT(id_giocatore) 
+			INTO numGiocatori
+    			FROM rosa
+    			WHERE squadra = NEW.squadra
+    			GROUP BY squadra, anno;
 
-            		-- Inserisco calciatore
+    			IF numGiocatori < 24 THEN
 
-            		INSERT INTO Calciatore(nome, cognome, nazione, nascita, dataritiro, piedepr, id_giocatore)
-            		VALUES (nomeC, cognomeC, nazioneC, dataNascitaC, dataRitiroC, piedePr, id_gio);
+            			id_gio := genera_id('Calciatore', 'id_giocatore');
 
-            		-- Inserisco ruolo
+            			-- Inserisco calciatore
 
-            		INSERT INTO Ruolo(ruolo, id_gio)
-            		VALUES (ruolo, id_gio);
+            			INSERT INTO Calciatore(nome, cognome, nazione, nascita, dataritiro, piedepr, id_giocatore)
+            			VALUES (nomeC, cognomeC, nazioneC, dataNascitaC, dataRitiroC, piedePr, id_gio);
 
-            		-- Genero un nuovo ID per la militanza
+            			-- Inserisco ruolo
 
-            		id_mil := genera_id('Militanza', 'id_militanza');
+            			INSERT INTO Ruolo(ruolo, id_gio)
+            			VALUES (ruolo, id_gio);
 
-            		-- Inserisco militanza
+            			-- Genero un nuovo ID per la militanza
 
-            		INSERT INTO Militanza(inizio, fine, tirisegnati, partiteGiocate, squadra, giocatore, id_militanza)
-            		VALUES (inizioMil, fineMil, tiriSegnati, partiteGiocate, nomeSquadra, id_gio, id_mil);
+            			id_mil := genera_id('Militanza', 'id_militanza');
 
-            		-- Inserisco goalSubiti se non è null
+            			-- Inserisco militanza
 
-            		IF goalSubiti IS NOT NULL THEN
+            			INSERT INTO Militanza(inizio, fine, tirisegnati, partiteGiocate, squadra, giocatore, id_militanza)
+            			VALUES (inizioMil, fineMil, tiriSegnati, partiteGiocate, nomeSquadra, id_gio, id_mil);
 
-                		INSERT INTO Goalsubiti(goalSubiti, id_giocatore, id_militanza)
-                		VALUES (goalSubiti, id_gio, id_mil);
+            			-- Inserisco goalSubiti se non è null
 
-            		END IF;
+            			IF goalSubiti IS NOT NULL THEN
+
+                			INSERT INTO Goalsubiti(goalSubiti, id_giocatore, id_militanza)
+                			VALUES (goalSubiti, id_gio, id_mil);
+
+            			END IF;
+			ELSE
+				RAISE EXCPETION 'La squadra inserita è piena'
+			END IF;
         	END IF;
 	ELSE
         	RAISE EXCEPTION 'Il calciatore è già presente';
@@ -234,73 +246,84 @@ DECLARE
    	lastDate DATE;
     	numM INT;
     	id_mil varchar(20);
+	numGiocatori INT;
 BEGIN
-    	IF fineExMilitanza IS NOT NULL THEN
+	SELECT COUNT(id_giocatore) 
+	INTO numGiocatori
+    	FROM rosa
+    	WHERE squadra = NEW.squadra
+    	GROUP BY squadra, anno;
 
-        	-- se non era stata impostata una data di fine militanza allora questo valore sarà diverso da null
-        	-- prendo la militanza ancora in atto
+    	IF numGiocatori < 24 THEN
 
-        	SELECT *
-        	INTO lastMil
-        	FROM Militanza AS M
-        	WHERE M.id_giocatore LIKE id_giocatore AND M.fine IS NULL;
+    		IF fineExMilitanza IS NOT NULL THEN
+
+        		-- se non era stata impostata una data di fine militanza allora questo valore sarà diverso da null
+        		-- prendo la militanza ancora in atto
+
+        		SELECT *
+        		INTO lastMil
+        		FROM Militanza AS M
+        		WHERE M.id_giocatore LIKE id_giocatore AND M.fine IS NULL;
 		
-		IF LOWER(lastMil.squadra) <> LOWER(squadra) THAN
+			IF LOWER(lastMil.squadra) <> LOWER(squadra) THAN
 
-        		IF fineExMilitanza > lastMil.inizio AND EXTRACT(MONTH FROM fineExMilitanza) IN (1, 7, 8, 9) THEN
+        			IF fineExMilitanza > lastMil.inizio AND EXTRACT(MONTH FROM fineExMilitanza) IN (1, 7, 8, 9) THEN
             		
-				-- mi assicuro che la fine della vecchia militanza sia valida e la inserisco
+					-- mi assicuro che la fine della vecchia militanza sia valida e la inserisco
 
-            			UPDATE Militanza AS M
-            			SET M.fine = fineExMilitanza
-            			WHERE M.id_giocatore LIKE id_giocatore AND M.fine IS NULL;
+            				UPDATE Militanza AS M
+            				SET M.fine = fineExMilitanza
+            				WHERE M.id_giocatore LIKE id_giocatore AND M.fine IS NULL;
 
-            			-- inserisco la nuova militanza senza controllare la validità poiché già stato fatto sull'applicativo
+            				-- inserisco la nuova militanza senza controllare la validità poiché già stato fatto sull'applicativo
             		
-				id_mil := genera_id('Militanza', 'id_militanza');
+					id_mil := genera_id('Militanza', 'id_militanza');
 
-            			INSERT INTO Militanza(inizio, fine, id_giocatore, squadra, tirisegnati, partitegiocate, id_militanza)
-            			VALUES (inizioNuovaMilitanza, fineNuovaMilitanza, id_giocatore, squadra, tiriSegnati, partiteGiocate, id_mil);
+            				INSERT INTO Militanza(inizio, fine, id_giocatore, squadra, tirisegnati, partitegiocate, id_militanza)
+            				VALUES (inizioNuovaMilitanza, fineNuovaMilitanza, id_giocatore, squadra, tiriSegnati, partiteGiocate, id_mil);
 
-            			IF goalSubiti IS NOT NULL THEN
-                			INSERT INTO goalSubiti(goalSubiti, id_giocatore, id_militanza)
-                			VALUES (goalSubiti, id_giocatore, id_mil);
-            			END IF;
-        		ELSE
-            			RAISE EXCEPTION 'Data fine vecchia Militanza non valida';
-        		END IF;
-		ELSE
-			RAISE EXCEPTION 'Il giocatore si trova gia nella squadra';
-		END IF;
-    	ELSE
-        	SELECT *
-		INTO lastMil
-   		FROM Militanza m
-    		WHERE m.id_giocatore = p_id_giocatore
-      			AND m.fine = (SELECT MAX(fine)
-        			      FROM Militanza
-        			      WHERE id_giocatore = p_id_giocatore);
+            				IF goalSubiti IS NOT NULL THEN
+                				INSERT INTO goalSubiti(goalSubiti, id_giocatore, id_militanza)
+                				VALUES (goalSubiti, id_giocatore, id_mil);
+            				END IF;
+        			ELSE
+            				RAISE EXCEPTION 'Data fine vecchia Militanza non valida';
+        			END IF;
+			ELSE
+				RAISE EXCEPTION 'Il giocatore si trova gia nella squadra';
+			END IF;
+    		ELSE
+        		SELECT *
+			INTO lastMil
+   			FROM Militanza m
+    			WHERE m.id_giocatore = p_id_giocatore AND m.fine = (SELECT MAX(fine)
+        			      					    FROM Militanza
+        			      					    WHERE id_giocatore = p_id_giocatore);
 		
-		IF LOWER(lastMil.squadra) <> LOWER(squadra) THAN
+			IF LOWER(lastMil.squadra) <> LOWER(squadra) THAN
 
-			IF inizioNuovaMilitanza > lastDate THEN      -- non faccio il controllo dei mesi perché già fatto sull'applicativo 
+				IF inizioNuovaMilitanza > lastDate THEN      -- non faccio il controllo dei mesi perché già fatto sull'applicativo 
 
-            			id_mil := genera_id('Militanza', 'id_militanza');
+            				id_mil := genera_id('Militanza', 'id_militanza');
 
-            			INSERT INTO Militanza(inizio, fine, id_giocatore, squadra, tirisegnati, partitegiocate, id_militanza)
-            			VALUES (inizioNuovaMilitanza, fineNuovaMilitanza, id_giocatore, squadra, tiriSegnati, partiteGiocate, id_mil);
+            				INSERT INTO Militanza(inizio, fine, id_giocatore, squadra, tirisegnati, partitegiocate, id_militanza)
+            				VALUES (inizioNuovaMilitanza, fineNuovaMilitanza, id_giocatore, squadra, tiriSegnati, partiteGiocate, id_mil);
 
-	    			IF goalSubiti IS NOT NULL THEN
-                			INSERT INTO goalSubiti(goalSubiti, id_giocatore, id_militanza)
-                			VALUES (goalSubiti, id_giocatore, id_mil);
-            			END IF;
-        		ELSE
-            			RAISE EXCEPTION 'Data inizio Militanza non valida';
-        		END IF;
-		ELSE
-			RAISE EXCEPTION 'Il giocatore si trova gia nella squadra';
-		ENDIF;
-    	END IF;
+	    				IF goalSubiti IS NOT NULL THEN
+                				INSERT INTO goalSubiti(goalSubiti, id_giocatore, id_militanza)
+                				VALUES (goalSubiti, id_giocatore, id_mil);
+            				END IF;
+        			ELSE
+            				RAISE EXCEPTION 'Data inizio Militanza non valida';
+        			END IF;
+			ELSE
+				RAISE EXCEPTION 'Il giocatore si trova gia nella squadra';
+			ENDIF;
+    		END IF;
+	ELSE 
+		RAISE EXCEPTION 'La squadra è gia piena';
+	END IF;
 END;
 $$ LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------
