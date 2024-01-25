@@ -427,4 +427,39 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE insert_squadra_on_trofeoSquadra(
+nazione varchar(100),
+nomeCampionato varchar(100),
+squadraVincitrice varchar(100))
+AS
+DECLARE
+	compNaz campionati_nazionali%ROWTYPE;
+	compNonNaz campionati_non_nazionali%ROWTYPE;
+	trofeo trofeo_squadra%ROWTYPE;
+BEGIN
+	IF nazione IS NOT NULL THEN
+		--significa che è un campionato nazionale
+	
+		SELECT *
+		INTO compNaz
+		FROM campionati_nazionali AS c
+		WHERE c.nome ILIKE nomeCampionato AND c.nazione ILIKE nazione;
 
+		UPDATE trofeo_squadra AS t
+		SET t.squadra = squadraVincitrice
+		WHERE t.nome ILIKE compNaz.nometrofeo AND t.squadra IS NULL;
+	ELSE
+		--significa che è un campionato non nazionale
+
+		SELECT *
+		INTO compNonNaz
+		FROM campionati_non_nazionali AS c
+		WHERE c.nome ILIKE nomeCampionato;
+
+		UPDATE trofeo_squadra AS t
+		SET t.squadra = squadraVincitrice
+		WHERE t.nome ILIKE compNonNaz.nometrofeo AND t.squadra IS NULL;
+	END IF;
+END:
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
