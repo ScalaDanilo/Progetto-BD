@@ -10,3 +10,9 @@ inserire i trofei ai giocatori delle squadre vincitori dei trofei
 
 calcolare rosa dopo inserimento di militanza
 
+SQL DINAMICO
+FUNZIONI DI RICERCA
+1 Funzione di ricerca per nome (generalizzata per giocatore e squadra)
+
+2 Funzione ricerche per ruolo, per piede, per numero di goal segnati, per numero di
+goal subiti, per età, per squadre di appartenenza.
