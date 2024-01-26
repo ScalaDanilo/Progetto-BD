@@ -37,7 +37,7 @@ $$
 LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE TRIGGER checkPortiere AS
-BEFORE INSERT ON goalsubiti
+BEFORE INSERT OR UPDATE OF goalSubiti ON goalsubiti
 FOR EACH ROW
 DECLARE
 	ruolo VARCHAR(20);
