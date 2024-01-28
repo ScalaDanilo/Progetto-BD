@@ -468,39 +468,310 @@ CREATE EXTENSION IF NOT EXISTS pg_cron;
 -- Crea una funzione che sarà eseguita periodicamente 
 CREATE OR REPLACE FUNCTION esegui_logica_ogni_6_mesi() 
 RETURNS VOID AS $$ 
+DECLARE
 	dataCorrente date := NOW();
 BEGIN   
-	IF EXTRACT(MONTH FROM dataCorrente) = 12 THEN  
-		FOR squadra IN (SELECT nomesquadra FROM squadre) LOOP
-			FOR militanza IN (SELECT * 
+	IF EXTRACT(MONTH FROM dataCorrente) = 12 THEN  			--inserimento invernale
+		FOR squadra IN (SELECT nomesquadra FROM squadre) LOOP   --prendo tutte le squadre
+			FOR militanza IN (SELECT * 			--e prendo tutte le militanze che non sono iniziate 
 					  		  FROM militanza AS m 
-					  		  WHERE (m.squadra = squadra) AND (fine IS NULL OR EXTRACT(YEAR FROM fine) > EXTRACT(YEAR FROM dataCorrente));
+					  		  WHERE (m.squadra = squadra) AND (fine IS NULL OR EXTRACT(YEAR FROM fine) > EXTRACT(YEAR FROM dataCorrente);  --manca il controllo per non prendere quelli che hanno iniziato la militanza d'estate
+																				       --ma non lo faccio pochè dopo con l'if controllo se i giocatori con la militanza d'estate sono gia presenti nel db
 							  LOOP
 							  
-							  INSERT INTO rosa(id_giocatore, squadra, anno)
-							  VALUES (militanza.id_giocatore, squadra, dataCorrente);
+							  IF NOT EXISTS(SELECT 1 
+									FROM rosa AS r 
+									WHERE r.id_giocatore = militanza.id_giocatore 
+									AND r.squadra = squadra 
+									AND r.anno = dataCorrente) THEN
+
+							  	INSERT INTO rosa(id_giocatore, squadra, anno)
+							  	VALUES (militanza.id_giocatore, squadra, dataCorrente);
 							  
-							  RAISE NOTICE 'Eseguito in sessione invernale: %', now(); 
+							  END IF;
 			END LOOP;
 		END LOOP;
+		RAISE NOTICE 'Eseguito in sessione invernale: %', now(); 
 	ELSE 
 		FOR squadra IN (SELECT nomesquadra FROM squadre) LOOP
 			FOR militanza IN (SELECT * 
 					  		  FROM militanza AS m 
 					  		  WHERE (m.squadra = squadra) AND (fine IS NULL OR EXTRACT(YEAR FROM fine) >= EXTRACT(YEAR FROM dataCorrente) 
-															   			   AND EXTRACT(MONTH FROM fine) > '1');
+															   			   AND EXTRACT(MONTH FROM fine) > 1);
 							  LOOP
 							  
-							  INSERT INTO rosa(id_giocatore, squadra, anno)
-							  VALUES (militanza.id_giocatore, squadra, dataCorrente);
+							  IF NOT EXISTS(SELECT 1 
+									FROM rosa AS r 
+									WHERE r.id_giocatore = militanza.id_giocatore 
+									AND r.squadra = squadra 
+									AND r.anno = dataCorrente) THEN
+								
+							  	INSERT INTO rosa(id_giocatore, squadra, anno)
+							  	VALUES (militanza.id_giocatore, squadra, dataCorrente);
 							  
-							  RAISE NOTICE 'Eseguito in sessione primaverile: %', now();  
+							  END IF;
 			END LOOP;
 		END LOOP;
+
+		RAISE NOTICE 'Eseguito in sessione primaverile: %', now(); 
+	END IF;
 END; 
 $$ LANGUAGE plpgsql;  
 
 -- Pianifica l'esecuzione della funzione ogni 6 mesi 
 SELECT cron.schedule('0 0 31 12,6 *', 'SELECT esegui_logica_ogni_6_mesi()');
 ----------------------------------------------------------------------------------------------------------------
-													 
+CREATE OR REPLACE FUNCTION controlla_utente()
+RETURNS TRIGGER AS $$
+BEGIN
+    	IF NOT EXISTS (SELECT 1 FROM utente WHERE login = NEW.login) THEN
+        	RETURN NEW;
+    	ELSE
+        	RAISE EXCEPTION 'Nome Utente già utilizzato';
+    	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER insert_utente
+BEFORE INSERT ON utente
+FOR EACH ROW
+EXECUTE FUNCTION controlla_utente();
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE insert_feature(
+    nomeFeature VARCHAR(100)
+)
+AS $$ 
+BEGIN
+    	-- Controllo che non esista già una feature con questo nome
+    	IF NOT EXISTS (SELECT 1
+        	       FROM feature_caratteristiche
+        	       WHERE tipologia ILIKE nomeFeature
+    	) THEN
+        	-- La feature non esiste, la inserisco
+        	INSERT INTO feature_caratteristiche(tipologia)
+        	VALUES (nomeFeature);
+    	ELSE
+        	RAISE EXCEPTION 'La feature esiste già';
+    	END IF;
+END $$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION prendi_solo_feature_disponibili(id_giocatore VARCHAR(20))
+RETURNS VARCHAR(1000) AS $$
+DECLARE
+    	feature feature_caratteristiche%ROWTYPE;
+    	stringaDiRitorno VARCHAR(1000) := '';  -- Inizializzo la stringa vuota
+BEGIN
+   	-- Scorro un for per creare una stringa di feature caratteristiche disponibili
+    	FOR feature IN 	SELECT *
+                   	FROM feature_caratteristiche
+                   	WHERE tipologia NOT IN (SELECT tipo
+                                          	FROM giocatore_possiede_feature_caratteristiche
+                                          	WHERE giocatore = id_giocatore)
+    	LOOP
+        	-- Concateno il campo tipologia della feature alla stringa di ritorno
+        	stringaDiRitorno := stringaDiRitorno || '_' || feature.tipologia;
+    	END LOOP;
+
+    	RETURN stringaDiRitorno;
+END
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE insert_sponsor_secondari(
+    nomeSponsor VARCHAR(100),
+    finanziament INT,
+    nomeSquadra VARCHAR(100)
+)
+AS $$ 
+DECLARE
+    sponsor_exists sponsor_secondari%ROWTYPE;
+    sponsor_tec_exists sponsor_tec%ROWTYPE;
+BEGIN
+    -- Controllo che lo sponsor non sia già di un'altra squadra
+    SELECT * INTO sponsor_exists
+    FROM sponsor_secondari
+    WHERE nome ILIKE nomeSponsor;
+
+    IF sponsor_exists IS NULL THEN 
+        -- Faccio lo stesso controllo ma per gli sponsorTec
+        SELECT * INTO sponsor_tec_exists
+        FROM sponsor_tec
+        WHERE nome ILIKE nomeSponsor;
+
+        IF sponsor_tec_exists IS NULL THEN
+            -- A questo punto lo sponsor è valido e lo inserisco
+            INSERT INTO sponsor_secondari(nome, squadra)
+            VALUES (nomeSponsor, nomeSquadra);
+
+	    IF finanziamento IS NOT NULL THEN
+		
+		UPDATE sponsor_secondari
+		SET finanziamento = finanziament
+		WHERE nome = nomeSponsor AND squadra = nomeSquadra;
+
+	    END IF;
+        ELSE
+            RAISE EXCEPTION 'Lo sponsor è già sponsor tecnico di un altra squadra';    
+        END IF;
+    ELSE
+        RAISE EXCEPTION 'Lo sponsor è già sponsor secondario di un altra squadra';
+    END IF;
+END $$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE insert_nuovo_trofeo(nomeTrofeo VARCHAR(100), anno INT)
+AS $$
+BEGIN
+    	-- Controllo che non esista già un trofeo con questo nome
+    	IF NOT EXISTS (SELECT * FROM trofeo_individuale WHERE nome ILIKE nomeTrofeo) THEN
+
+        	INSERT INTO trofeo_individuale(nome, annoVincita)
+        	VALUES (nomeTrofeo, anno);
+
+    	ELSE
+        	RAISE EXCEPTION 'Il trofeo esiste già';
+    	END IF;
+END
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE PROCEDURE insert_vincitore_in_trofeo_individuale(id_giocatore varchar(100), anno INT, trofeo varchar(100))
+AS $$
+DECLARE
+	trofeo_ind trofeo_individuale%ROWTYPE;
+BEGIN
+	SELECT *
+	INTO trofeo_ind
+	FROM trofeo_individuale
+	WHERE nome = trofeo AND annoVincita = anno;
+
+	IF trofeo_ind IS NULL THEN
+	
+		UPDATE trofeo_individuale
+		SET vincitore = id_giocatore
+		WHERE nome = trofeo AND annoVincita = anno;
+	
+	ELSE
+		RAISE EXCPETION 'Il vincitore è gia stato assegnato';
+	END IF;
+END
+$$ LANGUAGE plpgsql;
+
+
+
+SELECT cron.schedule('0 0 1 1 *', 'SELECT istanzia_trofeo_per_nuovo_anno()');
+
+CREATE OR REPLACE FUNCTION istanzia_trofeo_per_nuovo_anno()
+RETURNS VOID AS $$
+DECLARE
+    	trophy trofeo_individuale%ROWTYPE;
+BEGIN
+    	-- Creo di nuovo tutti i trofei per l'anno nuovo
+    	FOR trophy IN 	SELECT DISTINCT nome, MAX(annoVincita) + 1 AS nuovo_anno, vincitore
+        		FROM trofeo_individuale
+                  	GROUP BY nome, vincitore
+    	LOOP
+        	-- Controllo se è stato assegnato oppure deve ancora essere assegnato
+        	IF trophy.vincitore IS NOT NULL THEN
+            	
+		INSERT INTO trofeo_individuale(nome, annoVincita)
+            	VALUES(trophy.nome, trophy.nuovo_anno);
+        	
+		
+
+
+END IF;
+    	END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE elimina_giocatore(
+    id_giocatore VARCHAR(20)
+)
+AS $$ 
+BEGIN
+    -- Elimino da goalSubiti
+    DELETE FROM goalSubiti AS g
+    WHERE g.id_giocatore = id_giocatore;
+
+    -- Elimino tutte le militanze dove è presente quel giocatore
+    DELETE FROM Militanza AS m
+    WHERE m.giocatore = id_giocatore;
+
+    -- Elimino da ruoli
+    DELETE FROM Ruolo AS r
+    WHERE r.id_giocatore = id_giocatore;
+
+    -- Elimino da rosa
+    DELETE FROM Rosa AS r
+    WHERE r.id_giocatore = id_giocatore;
+
+    -- Elimino da trofeo_squadra_calciatore
+    DELETE FROM trofeo_squadra_calciatore AS t
+    WHERE t.calciatore = id_giocatore;
+
+    -- Elimino da calciatore_possiede_feature_caratteristiche
+    DELETE FROM calciatore_possiede_feature_caratteristiche AS c
+    WHERE c.giocatore = id_giocatore;
+
+    -- Elimino da trofeo individuale
+    DELETE FROM trofeo_individuale 
+    WHERE vincitore = id_giocatore;
+END;
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION inserisci_in_rosa()
+RETURNS TRIGGER AS $$
+DECLARE
+    data DATE;
+BEGIN
+	--arrotondo data
+	IF EXTRACT(MONTH FROM NEW.inizio) IN (7, 8, 9) THEN
+        	data := DATE_TRUNC('YEAR', NEW.inizio) + INTERVAL '1 YEAR' - INTERVAL '1 DAY';
+    	ELSE
+        	data := DATE_TRUNC('YEAR', NEW.inizio) + INTERVAL '6 MONTHS' - INTERVAL '1 DAY';
+    	END IF;
+
+	--se siamo nel presente inserisco solo nella rosa attuale perche il resto verra fatto dalla funzione di manutenzione della rosa automatico
+	IF EXTRACT(YEAR FROM NEW.inizio) >= EXTRACT(YEAR FROM NOW()) THEN	
+
+    		INSERT INTO rosa(id_giocatore, squadra, anno)
+    		VALUES (NEW.id_giocatore, NEW.squadra, data);
+
+    		RETURN NEW;
+	
+	ELSE	--se invece l'inserimento inizia prima del presente allora inserisco dentro la rosa per ogni intervallo fino ad arrivare al presente in cui verra poi continuato dalla manutenzione
+
+
+		WHILE EXTRACT(YEAR FROM data) < EXTRACT(YEAR FROM NOW()) LOOP
+			
+			IF EXTRACT(MONTH FROM data) = 6 THEN
+				
+				INSERT INTO rosa(id_giocatore, squadra, anno)
+    				VALUES (NEW.id_giocatore, NEW.squadra, data);
+			
+				data := DATE_TRUNC('YEAR', data) + INTERVAL '1 YEAR' - INTERVAL '1 DAY';
+			ELSE 
+			
+				INSERT INTO rosa(id_giocatore, squadra, anno)
+    				VALUES (NEW.id_giocatore, NEW.squadra, data);
+
+				data := DATE_TRUNC('YEAR', data + INTERVAL '1 YEAR') + INTERVAL '6 MONTHS' - INTERVAL '1 DAY';
+			END IF;
+			
+		END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER inserimentoRosa
+AFTER INSERT ON Militanza
+FOR EACH ROW
+EXECUTE FUNCTION inserisci_in_rosa();
+
+
+
+
+
+
+	
