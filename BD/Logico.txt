@@ -4,7 +4,7 @@ Ruolo(Ruolo{PK}, ID_Giocatore{FK -> Calciatore}{PK});
 
 GoalSubiti(GoalSubiti, ID_Giocatore{FK -> Calciatore}{PK}, ID_Militanza{FK -> Militanza}{PK})
 
-Militanza(Inizio, Fine*, ID_Militanza{PK}, Giocatore{FK -> Calciatore}, Squadra{FK -> Squadra}, GoalSubiti*, TiriSegnati, PartiteGiocate)
+Militanza(Inizio, Fine*, ID_Militanza{PK}, Giocatore{FK -> Calciatore}, Squadra{FK -> Squadra}, TiriSegnati, PartiteGiocate)
 
 Utente(Login{PK}, Password, Priority)
 
