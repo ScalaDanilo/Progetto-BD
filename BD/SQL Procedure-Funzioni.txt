@@ -766,7 +766,7 @@ AFTER INSERT ON Militanza
 FOR EACH ROW
 EXECUTE FUNCTION inserisci_in_rosa();
 ----------------------------------------------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION visualizzaCalcSquad(valore VARCHAR(30))
+CREATE OR REPLACE FUNCTION visualizzaCalc(valore VARCHAR(30))
 RETURN giocatore%ROWTYPE AS $$
 DECLARE
     string_sql VARCHAR(50) := 'SELECT * FROM GIOCATORE WHERE nome = ';
@@ -778,7 +778,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION visualizzaCalcSquad(valore VARCHAR(30))
+CREATE OR REPLACE FUNCTION visualizzaSquad(valore VARCHAR(30))
 RETURN squadre%ROWTYPE AS $$
 DECLARE
     string_sql VARCHAR(50) := 'SELECT * FROM SQUADRE WHERE nomeSquadra = ';
@@ -790,7 +790,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------								 
-CREATE OR REPLACE FUNCTION visualizzaCalcSquad(valore VARCHAR(30))
+CREATE OR REPLACE FUNCTION visualizzaPerPiedePR(valore VARCHAR(30))
 RETURN giocatore%ROWTYPE AS $$
 DECLARE
     string_sql VARCHAR(50) := 'SELECT * FROM GIOCATORE WHERE piedePR = ';
@@ -802,7 +802,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------								 
-CREATE OR REPLACE FUNCTION visualizzaCalcSquad(valore VARCHAR(30))
+CREATE OR REPLACE FUNCTION visualizzaPerEta(valore VARCHAR(30))
 RETURN giocatore%ROWTYPE AS $$
 DECLARE
     string_sql VARCHAR(50) := 'SELECT * FROM GIOCATORE WHERE EXTRACT(YEAR FROM AGE(current_date, nascita)) = ';
