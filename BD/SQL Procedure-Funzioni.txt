@@ -765,3 +765,52 @@ CREATE TRIGGER inserimentoRosa
 AFTER INSERT ON Militanza
 FOR EACH ROW
 EXECUTE FUNCTION inserisci_in_rosa();
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION visualizzaCalcSquad(valore VARCHAR(30))
+RETURN giocatore%ROWTYPE AS $$
+DECLARE
+    string_sql VARCHAR(50) := 'SELECT * FROM GIOCATORE WHERE nome = ';
+    instr_sql VARCHAR(80) := '';
+BEGIN
+    instr_sql := instr_sql || string_sql || valore || ';';
+
+    EXECUTE IMMEDIATE (instr_sql);
+END;
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION visualizzaCalcSquad(valore VARCHAR(30))
+RETURN squadre%ROWTYPE AS $$
+DECLARE
+    string_sql VARCHAR(50) := 'SELECT * FROM SQUADRE WHERE nomeSquadra = ';
+    instr_sql VARCHAR(80) := '';
+BEGIN
+    instr_sql := instr_sql || string_sql || valore || ';';
+
+    EXECUTE IMMEDIATE (instr_sql);
+END;
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------								 
+CREATE OR REPLACE FUNCTION visualizzaCalcSquad(valore VARCHAR(30))
+RETURN giocatore%ROWTYPE AS $$
+DECLARE
+    string_sql VARCHAR(50) := 'SELECT * FROM GIOCATORE WHERE piedePR = ';
+    instr_sql VARCHAR(80) := '';
+BEGIN
+    instr_sql := instr_sql || string_sql || valore || ';';
+
+    EXECUTE IMMEDIATE (instr_sql);
+END;
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------								 
+CREATE OR REPLACE FUNCTION visualizzaCalcSquad(valore VARCHAR(30))
+RETURN giocatore%ROWTYPE AS $$
+DECLARE
+    string_sql VARCHAR(50) := 'SELECT * FROM GIOCATORE WHERE EXTRACT(YEAR FROM AGE(current_date, nascita)) = ';
+    instr_sql VARCHAR(80) := '';
+BEGIN
+    instr_sql := instr_sql || string_sql || valore || ';';
+
+    EXECUTE IMMEDIATE (instr_sql);
+END;
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
