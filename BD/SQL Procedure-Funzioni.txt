@@ -778,39 +778,124 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION visualizzaSquad(valore VARCHAR(30))
-RETURN squadre%ROWTYPE AS $$
+CREATE OR REPLACE FUNCTION visualizzaCalc(valore VARCHAR(30), order BOOLEAN)
+RETURNS SETOF giocatore AS $$
 DECLARE
-    string_sql VARCHAR(50) := 'SELECT * FROM SQUADRE WHERE nomeSquadra = ';
-    instr_sql VARCHAR(80) := '';
+    giocatore_row giocatore%ROWTYPE;
+    string_sql VARCHAR(200);
 BEGIN
-    instr_sql := instr_sql || string_sql || valore || ';';
+    string_sql := 'SELECT * FROM GIOCATORE WHERE nome = $1';
 
-    EXECUTE IMMEDIATE (instr_sql);
+    IF order THEN
+        string_sql := string_sql || ' ORDER BY cognome';
+    END IF;
+
+    -- Utilizza EXECUTE per eseguire la query parametrica
+    FOR giocatore_row IN EXECUTE string_sql USING valore
+    LOOP
+        -- Restituisci ogni tupla risultante
+        RETURN NEXT giocatore_row;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION visualizzaSquadra(valore VARCHAR(30))
+RETURNS squadre%ROWTYPE AS $$
+DECLARE
+    squadra_row squadre%ROWTYPE;
+    string_sql VARCHAR(200);
+BEGIN
+    string_sql := 'SELECT * FROM SQUADRE WHERE nomeSquadra = $1';
+
+    -- Utilizza EXECUTE per eseguire la query parametrica
+    EXECUTE string_sql INTO squadra_row USING valore;
+
+    -- Restituisci la tupla risultante
+    RETURN NEXT squadra_row;
 END;
 $$ LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------								 
 CREATE OR REPLACE FUNCTION visualizzaPerPiedePR(valore VARCHAR(30))
-RETURN giocatore%ROWTYPE AS $$
+RETURNS SETOF giocatore AS $$
 DECLARE
-    string_sql VARCHAR(50) := 'SELECT * FROM GIOCATORE WHERE piedePR = ';
-    instr_sql VARCHAR(80) := '';
+    giocatore_row giocatore%ROWTYPE;
+    string_sql VARCHAR(200);
 BEGIN
-    instr_sql := instr_sql || string_sql || valore || ';';
+    string_sql := 'SELECT * FROM GIOCATORE WHERE piedePR = $1';
 
-    EXECUTE IMMEDIATE (instr_sql);
+    -- Utilizza EXECUTE per eseguire la query parametrica
+    FOR giocatore_row IN EXECUTE string_sql USING valore
+    LOOP
+        -- Restituisci la tupla risultante
+        RETURN NEXT giocatore_row;
+    END LOOP;
 END;
 $$ LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------								 
 CREATE OR REPLACE FUNCTION visualizzaPerEta(valore VARCHAR(30))
-RETURN giocatore%ROWTYPE AS $$
+RETURN SETOF giocatore AS $$
 DECLARE
-    string_sql VARCHAR(50) := 'SELECT * FROM GIOCATORE WHERE EXTRACT(YEAR FROM AGE(current_date, nascita)) = ';
-    instr_sql VARCHAR(80) := '';
+    giocatore_row giocatore%ROWTYPE;
+    string_sql VARCHAR(200);
 BEGIN
-    instr_sql := instr_sql || string_sql || valore || ';';
+    string_sql := 'SELECT * FROM GIOCATORE WHERE EXTRACT(YEAR FROM AGE(current_date, nascita)) = $1';
 
-    EXECUTE IMMEDIATE (instr_sql);
+    -- Utilizza EXECUTE per eseguire la query parametrica
+    FOR giocatore_row IN EXECUTE string_sql USING valore
+    LOOP
+        -- Restituisci la tupla risultante
+        RETURN NEXT giocatore_row;
+    END LOOP;
 END;
 $$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------								 
+CREATE OR REPLACE FUNCTION ricercaPerRuolo(ruoli IN VARCHAR(100)) 
+RETURN VARCHAR(100000) AS $$
+DECLARE
+	pos INT;
+	start_pos INT := 1;
+	ruolo VARCHAR(50);
+	return_value VARCHAR(100000) := '';
+BEGIN
+	FOR giocatori IN (SELECT * FROM GIOCATORE AS G, RUOLO AS R WHERE G.Id_Giocatore = R.Id_Giocatore) LOOP
+		pos := INSTR(giocatori.Ruolo, '_', start_pos);
+		LOOP
+			IF pos > 0 THEN
+				ruolo := SUBSTR (giocatori.Ruolo, start_pos, pos - start_pos);
+				start_pos := pos + 1;
+			ELSE
+				ruolo := SUBSTR (giocatori.Ruolo, start_pos);
+			END IF;
+
+			IF ruolo = ruoli THEN
+				return_value := return_value || giocatori.nome || '_' || giocatori.cognome || '_' || giocatori.nascita || '_' || giocatori.piedePR || '_' || giocatori.anzionalita || '_' || giocatori.ruolo || ',';
+			END IF;
+
+			EXIT WHEN pos = 0;
+		END LOOP
+	END LOOP;
+
+	RETURN return_value;
+END; 
+$$
+LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION ricercaPerGolSegnati(goal INT)
+RETURN SETOF RECORD AS $$
+DECLARE
+    giocatore_info RECORD;
+BEGIN
+    FOR giocatore_info IN
+        SELECT G.*, S.GoalSubiti
+        FROM GIOCATORE AS G
+        JOIN GOALSBITI AS S ON G.Id_Giocatore = S.Id_Giocatore
+        WHERE S.GoalSubiti = $1
+    LOOP
+        RETURN NEXT giocatore_info;
+    END LOOP;
+    
+    RETURN;
+END;
+$$
+LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------
