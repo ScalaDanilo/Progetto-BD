@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION verification(login IN VARCHAR(50), pass IN VARCHAR(50)) 
-RETURNS INT AS $verification$
+RETURNS INT AS $$
 DECLARE
     priority_found INT;
 BEGIN
@@ -18,7 +18,7 @@ $$
 LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION convRuolo(ruoli IN VARCHAR(100)) 
-RETURN VARCHAR(20) AS $convRuolo$
+RETURN VARCHAR(20) AS $$
 DECLARE
 	pos INT;
 	ruolo VARCHAR(20);
@@ -35,7 +35,7 @@ BEGIN
 END; 
 $$
 LANGUAGE plpgsql;
-----------------------------------------------------------------------------------------------------------------
+
 CREATE OR REPLACE TRIGGER checkPortiere AS
 BEFORE INSERT OR UPDATE OF goalSubiti ON goalsubiti
 FOR EACH ROW
@@ -72,7 +72,7 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-----------------------------------------------------------------------------------------------------------------
+
 CREATE TRIGGER controllaNumGiocatori
 BEFORE INSERT ON squadra_gioca_in_competizioni_nazionali
 FOR EACH ROW
@@ -556,7 +556,6 @@ BEGIN
 END $$ LANGUAGE plpgsql;
 
 
-
 CREATE OR REPLACE FUNCTION prendi_solo_feature_disponibili(id_giocatore VARCHAR(20))
 RETURNS VARCHAR(1000) AS $$
 DECLARE
@@ -635,7 +634,6 @@ END
 $$ LANGUAGE plpgsql;
 
 
-
 CREATE OR REPLACE PROCEDURE insert_vincitore_in_trofeo_individuale(id_giocatore varchar(100), anno INT, trofeo varchar(100))
 AS $$
 DECLARE
@@ -657,7 +655,6 @@ BEGIN
 	END IF;
 END
 $$ LANGUAGE plpgsql;
-
 
 
 SELECT cron.schedule('0 0 1 1 *', 'SELECT istanzia_trofeo_per_nuovo_anno()');
