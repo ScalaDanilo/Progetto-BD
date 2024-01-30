@@ -1,4 +1,4 @@
-Calciatore(Nome, Cognome, Nascita, PiedePR, DataRitiro*, Nazionalita, ID_Giocatore{PK}, ValoreMercato);
+Calciatore(Nome, Cognome, Nascita, PiedePR, DataRitiro*, Nazionalita, ID_Giocatore{PK}, ValoreMercato*);
 
 Ruolo(Ruolo{PK}, ID_Giocatore{FK -> Calciatore}{PK});
 
@@ -14,7 +14,7 @@ Giocatore_Possiede_Feature_Caratteristiche(Giocatore{FK -> Calciatore}{PK}, Tipo
 
 Trofeo_Individuale(Nome{PK}, DataAssegnazione{PK}, Vincitore{FK -> Calciatore})
 
-Trofeo_Squadra(Nome{PK}, DataVincita{PK}, Squadra{FK -> Squadre})
+Trofeo_Squadra(Nome{PK}, DataVincita{PK}, Squadra{FK -> Squadre}*)
 
 Trofeo_Squadra_Calciatore(Nome{FK -> Trofeo_Squadra}{PK}, DataVincita{FK -> Trofeo_Squadra}{PK}, Squadra{FK -> Squadre}, CalciatoreV{FK -> Calciatore}{PK})
 
@@ -26,9 +26,9 @@ Sponsor_Secondari(Nome{PK}, Finanziamento);
 
 SponsorTec(Nome{PK}, Finanziamento);
 
-Competizioni_Non_Nazionali(Nome{PK}, Tipo, Anno{PK});
+Competizioni_Non_Nazionali(Nome{PK}, Tipo, Anno{PK}, nomeTrofeo{FK -> TrofeoSquadra} annoVincita{FK -> TrofeoSquadra});
 
-Competizioni_Nazionali(Nome{PK}, Tipo, Anno{PK});
+Competizioni_Nazionali(Nome{PK}, Tipo, Anno{PK}, nomeTrofeo{FK -> TrofeoSquadra} annoVincita{FK -> TrofeoSquadra});
 
 Squadra_Gioca_In_Competizioni_Non_Nazionali(Squadra{FK -> Squadre}{PK}, Nome{FK -> Comp_Non_Nazionali}{PK}, Anno{FK -> Comp_Non_Nazionali}{PK});
 
