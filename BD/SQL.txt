@@ -13,8 +13,8 @@ PRIMARY KEY(ID_Giocatore));
 -------------------------------------------------------------
 
 2 CREATE TABLE Ruolo(
-Ruolo  varchar(200) NOT NULL,
-ID_Giocatore  char(20)  NOT NULL,
+Ruolo  varchar(200)       NOT NULL,
+ID_Giocatore  char(20)    NOT NULL,
 
 FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore),
 PRIMARY KEY(Ruolo, ID_Giocatore));
