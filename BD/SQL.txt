@@ -30,7 +30,7 @@ PRIMARY KEY(Login));
 
 -------------------------------------------------------------
 
-4CREATE TABLE Feature_Caratteristiche(
+4 CREATE TABLE Feature_Caratteristiche(
 Tipologia	varchar(100)	NOT NULL,
 
 PRIMARY KEY(Tipologia));
