@@ -37,7 +37,7 @@ PRIMARY KEY(Tipologia));
 
 -------------------------------------------------------------
 
-5CREATE TABLE Giocatore_Possiede_Feature_Caratteristiche(
+5 CREATE TABLE Giocatore_Possiede_Feature_Caratteristiche(
 Giocatore	varchar(20)	NOT NULL,
 Tipo		varchar(100)	NOT NULL,
 
@@ -49,9 +49,9 @@ PRIMARY KEY(Giocatore, Tipo));
 -------------------------------------------------------------
 
 6 CREATE TABLE Trofeo_Individuale(
-Nome 		varchar(50)	NOT NULL,
-AnnoVincita	int 		NOT NULL,
-Vincitore	varchar(24)	NOT NULL,
+Nome 		varchar(50)	    NOT NULL,
+AnnoVincita	int 		    NOT NULL,
+Vincitore	varchar(24)	  Default NULL,
 
 CONSTRAINT PK_Trofeo
   PRIMARY KEY(Nome, AnnoVincita),
@@ -60,9 +60,9 @@ FOREIGN KEY(Vincitore) REFERENCES Calciatore(ID_Giocatore));
 -------------------------------------------------------------
 
 10 CREATE TABLE Trofeo_Squadra(
-Nome 		varchar(50)	NOT NULL,
-AnnoVincita     int		NOT NULL,
-Squadra		varchar(100)	NOT NULL,
+Nome 		varchar(50)	      NOT NULL,
+AnnoVincita     int		    NOT NULL,
+Squadra		varchar(100)	  Default NULL,
 
 CONSTRAINT PK_Trofeo_Squadra
   PRIMARY KEY(Nome, AnnoVincita),
@@ -71,17 +71,17 @@ FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
 -------------------------------------------------------------
 
 7 CREATE TABLE SponsorTec(
-Nome		varchar(100)	NOT NULL,
-Finanziamento	bigint		
+Nome		varchar(100)	  NOT NULL,
+Finanziamento	bigint,		
 
 PRIMARY KEY(Nome));
 
 -------------------------------------------------------------
 
 9 CREATE TABLE Sponsor_Secondari(
-Nome 		varchar(100)	NOT NULL,
+Nome 		varchar(100)	    NOT NULL,
 Finanziamento	int,		
-Squadra  	varchar(100) 	NOT NULL,
+Squadra  	varchar(100) 	  NOT NULL,
 
 CONSTRAINT PK_Sponsor_Secondari
   PRIMARY KEY(Nome, Squadra),
@@ -90,11 +90,11 @@ FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra));
 -------------------------------------------------------------
 
 11 CREATE TABLE Competizioni_Non_Nazionali(
-Nome 		varchar(100)	NOT NULL,
-Tipo		varchar(100)	NOT NULL,
-Anno		int		NOT NULL,
-NomeTrofeo	varchar(50)	NOT NULL,
-AnnoVincita	int		NOT NULL,
+Nome 		varchar(100)	    NOT NULL,
+Tipo		varchar(100)	    NOT NULL,
+Anno		int		            NOT NULL,
+NomeTrofeo	varchar(50)	  NOT NULL,
+AnnoVincita	int		        NOT NULL,
 
 CONSTRAINT PK_Comp_Non_Naz
   PRIMARY KEY(Nome, Anno),
@@ -103,11 +103,11 @@ FOREIGN KEY(NomeTrofeo, AnnoVincita) REFERENCES Trofeo_Squadra(nome, annoVincita
 -------------------------------------------------------------
 
 12 CREATE TABLE Competizioni_Nazionali(
-Nome		varchar(100)	NOT NULL,
-Nazione		varchar(100)	NOT NULL,
-Anno		int		NOT NULL,
-NomeTrofeo	varchar(100)	NOT NULL,
-AnnoVincita	int		NOT NULL,
+Nome		varchar(100)	      NOT NULL,
+Nazione		varchar(100)	    NOT NULL,
+Anno		int		              NOT NULL,
+NomeTrofeo	varchar(100)	  NOT NULL,
+AnnoVincita	int		          NOT NULL,
 
 CONSTRAINT PK_Comp_Naz
   PRIMARY KEY(Nome, Anno),
@@ -126,9 +126,9 @@ FOREIGN KEY(NomeSponsor) REFERENCES SponsorTec(Nome));
 -------------------------------------------------------------
 
 13 CREATE TABLE Rosa(
-Anno  DATE	NOT NULL,
-ID_Giocatore  char(20)  NOT NULL,
-Squadra  varchar(100) 	NOT NULL,
+Anno  DATE	              NOT NULL,
+ID_Giocatore  char(20)    NOT NULL,
+Squadra  varchar(100) 	  NOT NULL,
 
 FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore),
 FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
@@ -139,13 +139,13 @@ CONSTRAINT PK_Rosa
 -------------------------------------------------------------
 
 14 CREATE TABLE Militanza (
-Inizio		DATE	NOT NULL,		
-Fine		DATE,
-ID_Militanza	char(20)	NOT NULL,
-Giocatore	char(20)	NOT NULL,
-Squadra		varchar(100)	NOT NULL,
-TiriSegnati	int		NOT NULL,
-PartiteGiocate	int		NOT NULL,
+Inizio		DATE	          NOT NULL,		
+Fine		DATE              Default NULL,
+ID_Militanza	char(20)	  NOT NULL,
+Giocatore	char(20)	      NOT NULL,
+Squadra		varchar(100)	  NOT NULL,
+TiriSegnati	int		        NOT NULL,
+PartiteGiocate	int		    NOT NULL,
 
 PRIMARY KEY(ID_Militanza),
 FOREIGN KEY(Squadra) REFERENCES SquadRe(NomeSquadra),
@@ -154,9 +154,9 @@ FOREIGN KEY(Giocatore) REFERENCES Calciatore(ID_Giocatore));
 -------------------------------------------------------------
 
 15 CREATE TABLE GoalSubiti(
-GoalSubiti  int  NOT NULL,
-ID_Giocatore  varchar(20)  NOT NULL,
-ID_Militanza  varchar(20)  NOT NULL,
+GoalSubiti  int              NOT NULL,
+ID_Giocatore  varchar(20)    NOT NULL,
+ID_Militanza  varchar(20)    NOT NULL,
 
 FOREIGN KEY(ID_Militanza) REFERENCES Militanza(ID_Militanza),
 FOREIGN KEY(ID_Giocatore) REFERENCES Calciatore(ID_Giocatore),
@@ -167,10 +167,10 @@ CONSTRAINT PK_GoalSubiti
 -------------------------------------------------------------
 
 16 CREATE TABLE Trofeo_Squadra_Calciatore(
-Nome		varchar(100)	NOT NULL,
-AnnoVincita	int		NOT NULL,
-Squadra		varchar(100)	NOT NULL,
-CalciatoreV	varchar(20)	NOT NULL,
+Nome		varchar(100)	      NOT NULL,
+AnnoVincita	int		          NOT NULL,
+Squadra		varchar(100)	    NOT NULL,
+CalciatoreV	varchar(20)	    NOT NULL,
 
 FOREIGN KEY(Nome, AnnoVincita) REFERENCES Trofeo_Squadra(Nome, AnnoVincita),
 FOREIGN KEY(CalciatoreV) REFERENCES Calciatore(ID_Giocatore),
@@ -182,13 +182,12 @@ CONSTRAINT PK_Trofeo_Squadra_Calciatore
 -------------------------------------------------------------
 
 17 CREATE TABLE Squadra_Gioca_In_Competizioni_Non_Nazionali(
-Squadra		varchar(100)	NOT NULL,
-Nome		varchar(100)	NOT NULL,
-Anno		int		NOT NULL,
+Squadra		varchar(100)	    NOT NULL,
+Nome		varchar(100)	      NOT NULL,
+Anno		int		              NOT NULL,
 
 FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
 FOREIGN KEY(Nome, Anno) REFERENCES Competizioni_Non_Nazionali(Nome, Anno),
-
 
 CONSTRAINT PK_Squadra_Gioca_In_Competizioni_Non_Nazionali
   PRIMARY KEY(Nome, Anno));
@@ -196,9 +195,9 @@ CONSTRAINT PK_Squadra_Gioca_In_Competizioni_Non_Nazionali
 -------------------------------------------------------------
 
 18 CREATE TABLE Squadra_Gioca_In_Competizioni_Nazionali(
-Squadra		varchar(100)	NOT NULL,
-Nome		varchar(100)	NOT NULL,
-Anno		int	NOT NULL,
+Squadra		varchar(100)	    NOT NULL,
+Nome		varchar(100)	      NOT NULL,
+Anno		int	                NOT NULL,
 
 FOREIGN KEY(Squadra) REFERENCES Squadre(NomeSquadra),
 FOREIGN KEY(Nome, Anno) REFERENCES Competizioni_Nazionali(Nome, Anno),
