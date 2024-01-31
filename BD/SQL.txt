@@ -21,7 +21,7 @@ PRIMARY KEY(Ruolo, ID_Giocatore));
 
 -------------------------------------------------------------
 
-3CREATE TABLE Utente(
+3 CREATE TABLE Utente(
 Login		varchar(30)	NOT NULL,
 Password	varchar(30)	NOT NULL,
 Priority int  NOT NULL,
