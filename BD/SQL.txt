@@ -21,7 +21,7 @@ PRIMARY KEY(Ruolo, ID_Giocatore));
 
 -------------------------------------------------------------
 
-3 CREATE TABLE Utente(
+3CREATE TABLE Utente(
 Login		varchar(30)	NOT NULL,
 Password	varchar(30)	NOT NULL,
 Priority int  NOT NULL,
@@ -30,14 +30,14 @@ PRIMARY KEY(Login));
 
 -------------------------------------------------------------
 
-4 CREATE TABLE Feature_Caratteristiche(
+4CREATE TABLE Feature_Caratteristiche(
 Tipologia	varchar(100)	NOT NULL,
 
 PRIMARY KEY(Tipologia));
 
 -------------------------------------------------------------
 
-5 CREATE TABLE Giocatore_Possiede_Feature_Caratteristiche(
+5CREATE TABLE Giocatore_Possiede_Feature_Caratteristiche(
 Giocatore	varchar(20)	NOT NULL,
 Tipo		varchar(100)	NOT NULL,
 
@@ -126,7 +126,7 @@ FOREIGN KEY(NomeSponsor) REFERENCES SponsorTec(Nome));
 -------------------------------------------------------------
 
 13 CREATE TABLE Rosa(
-Anno  varchar(20)	NOT NULL,
+Anno  DATE	NOT NULL,
 ID_Giocatore  char(20)  NOT NULL,
 Squadra  varchar(100) 	NOT NULL,
 
@@ -139,8 +139,8 @@ CONSTRAINT PK_Rosa
 -------------------------------------------------------------
 
 14 CREATE TABLE Militanza (
-Inizio		varchar(20)	NOT NULL,		
-Fine		varchar(20),
+Inizio		DATE	NOT NULL,		
+Fine		DATE,
 ID_Militanza	char(20)	NOT NULL,
 Giocatore	char(20)	NOT NULL,
 Squadra		varchar(100)	NOT NULL,
