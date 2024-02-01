@@ -48,14 +48,6 @@ BEGIN
 	END IF;
 END;
 ----------------------------------------------------------------------------------------------------------------
-CREATE TRIGGER inserimentoRosa
-AFTER INSERT ON Militanza
-FOR EACH ROW
-BEGIN
-	INSERT INTO rosa (anno, id_giocatore, squadra)
-	VALUES (NEW.inizio, NEW.id_giocatore, NEW.squadra);
-END;
-----------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION controllaNumGiocatoriFunction() RETURNS TRIGGER AS $$
 DECLARE
     numGiocatori INT;
