@@ -54,7 +54,7 @@ DECLARE
 BEGIN
     SELECT COUNT(id_giocatore) INTO numGiocatori
     FROM rosa
-    WHERE squadra = NEW.squadra
+    WHERE squadra = NEW.squadra AND ROWNUM = 1
     GROUP BY squadra, anno;
 
     IF numGiocatori < 16 THEN
