@@ -1,7 +1,0 @@
-30/01/24: Ristrutturazione e modello logico su latex.
-
-31/01/24: Recap di tutto, controllo errori.
-
-01/02/24: Ultimo controllo sql.
-
-02/02/24: Documentazione SQL su latex.
