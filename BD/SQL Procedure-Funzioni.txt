@@ -891,3 +891,28 @@ END;
 $$
 LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION visualizzaCalc(valore VARCHAR(30), ordine BOOLEAN)
+RETURNS SETOF calciatore AS $$
+DECLARE
+    giocatore_row calciatore%ROWTYPE;
+    query_sql VARCHAR(200);
+BEGIN
+    -- Costruisci la query di base
+    query_sql := 'SELECT * FROM CALCIATORE WHERE nome = $1';
+
+    -- Aggiungi la clausola ORDER BY se richiesto
+    IF ordine THEN
+        query_sql := query_sql || ' ORDER BY cognome';
+    END IF;
+
+    -- Esegui la query parametrica
+    FOR giocatore_row IN EXECUTE query_sql USING valore
+    LOOP
+        -- Restituisci ogni tupla risultante
+        RETURN NEXT giocatore_row;
+    END LOOP;
+
+    -- Restituisci tutte le tuple
+    RETURN;
+END;
+$$ LANGUAGE plpgsql;
