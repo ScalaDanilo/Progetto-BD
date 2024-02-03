@@ -552,27 +552,415 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 ----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE insert_squadrGiocaInCompetizione(
+squadra varchar(100),
+competizioneNome varchar(100),
+anno INT)
+AS $$
+
+DECLARE
+	compNaz competizioni_nazionali%ROWTYPE;
+	compNonNaz competizioni_non_nazionali%ROWTYPE;
+BEGIN	
+	--Controllo il nome per vedere se è una competizione nazionale o meno
+	IF EXISTS (SELECT * FROM competizioni_nazionali WHERE nome = competizioneNome) THEN
+
+		--allora inserisco in squadra_gioca_in_competizione_nazionale
+
+		INSERT INTO squadra_gioca_in_competizione_nazionale(squadra, nome, anno)
+		VALUES (squadra, competizioneNome, anno);
+	ELSE
+		--allora inserisco in squadra_gioca_in_competizione_non_nazionale
+
+		INSERT INTO squadra_gioca_in_competizione_non_nazionale(squadra, nome, anno)
+		VALUES (squadra, competizioneNome, anno);
+	END IF;
+END;
+
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE elimina_giocatore(
+    id_giocatore VARCHAR(20)
+)
+AS $$ 
+BEGIN
+    -- Elimino da goalSubiti
+    DELETE FROM goalSubiti AS g
+    WHERE g.id_giocatore = id_giocatore;
+
+    -- Elimino tutte le militanze dove è presente quel giocatore
+    DELETE FROM Militanza AS m
+    WHERE m.giocatore = id_giocatore;
+
+    -- Elimino da ruoli
+    DELETE FROM Ruolo AS r
+    WHERE r.id_giocatore = id_giocatore;
+
+    -- Elimino da rosa
+    DELETE FROM Rosa AS r
+    WHERE r.id_giocatore = id_giocatore;
+
+    -- Elimino da trofeo_squadra_calciatore
+    DELETE FROM trofeo_squadra_calciatore AS t
+    WHERE t.calciatore = id_giocatore;
+
+    -- Elimino da calciatore_possiede_feature_caratteristiche
+    DELETE FROM calciatore_possiede_feature_caratteristiche AS c
+    WHERE c.giocatore = id_giocatore;
+
+    -- Elimino da trofeo individuale
+    DELETE FROM trofeo_individuale 
+    WHERE vincitore = id_giocatore;
+END;
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE insert_vincitore_in_trofeo_individuale(id_giocatore varchar(100), anno INT, trofeo varchar(100))
+AS $$
+BEGIN
+	IF NOT EXISTS(
+			SELECT 1
+			FROM trofeo_individuale
+			WHERE nome = trofeo AND annoVincita = anno)
+	THEN
+	
+		UPDATE trofeo_individuale
+		SET vincitore = id_giocatore
+		WHERE nome = trofeo AND annoVincita = anno;
+	
+	ELSE
+		RAISE EXCEPTION 'Il vincitore è gia stato assegnato';
+	END IF;
+END
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE insert_nuovo_trofeo(nomeTrofeo VARCHAR(100), anno INT)
+AS $$
+
+BEGIN
+    	-- Controllo che non esista già un trofeo con questo nome
+    	IF NOT EXISTS (SELECT * FROM trofeo_individuale WHERE nome ILIKE nomeTrofeo) THEN
+
+        	INSERT INTO trofeo_individuale(nome, annoVincita)
+        	VALUES (nomeTrofeo, anno);
+
+    	ELSE
+        	RAISE EXCEPTION 'Il trofeo esiste già';
+    	END IF;
+END
+----------------------------------------------------------------------------------------------------------------
+SELECT cron.schedule('0 0 1 1 *', 'SELECT istanzia_trofeo_per_nuovo_anno()');
+
+CREATE OR REPLACE FUNCTION istanzia_trofeo_per_nuovo_anno()
+RETURNS VOID AS $$
+DECLARE
+    	trophy trofeo_individuale%ROWTYPE;
+	trophy2 trofeo_Squadra%ROWTYPE;
+BEGIN
+    	-- Creo di nuovo tutti i trofei per l'anno nuovo
+
+	--Prendo tutti i trofei dell'anno precedente
+    	FOR trophy IN 	SELECT DISTINCT nome, MAX(annoVincita) + 1 AS nuovo_anno, vincitore
+        		FROM trofeo_individuale
+    	LOOP
+        	-- Controllo se è stato assegnato oppure deve ancora essere assegnato
+        	IF trophy.vincitore IS NOT NULL THEN
+            	
+		INSERT INTO trofeo_individuale(nome, annoVincita)
+            	VALUES(trophy.nome, trophy.nuovo_anno);
+        	
+		END IF;
+    	END LOOP;
+
+	FOR trophy2 IN 	SELECT DISTINCT nome, MAX(annoVincita) + 1 AS nuovo_anno, squadra
+        		FROM trofeo_squadra
+                  	GROUP BY nome
+    	LOOP
+        	-- Controllo se è stato assegnato oppure deve ancora essere assegnato
+        	IF trophy2.squadra IS NOT NULL THEN
+            	
+		INSERT INTO trofeo_squadra(nome, annoVincita)
+            	VALUES(trophy2.nome, trophy2.nuovo_anno);
+        	
+		END IF;
+    	END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE insert_sponsor_secondari(
+    nomeSponsor VARCHAR(100),
+    finanziament INT,
+    nomeSquadra VARCHAR(100)
+)
+AS $$ 
+ 
+DECLARE
+    sponsor_exists sponsor_secondari%ROWTYPE;
+    sponsor_tec_exists sponsortec%ROWTYPE;
+BEGIN
+    -- Controllo che lo sponsor non sia già di un'altra squadra
+
+	IF NOT EXISTS (
+			SELECT 1
+    			FROM sponsor_secondari
+    			WHERE nome ILIKE nomeSponsor)
+		THEN 
+       	
+		-- Faccio lo stesso controllo ma per gli sponsorTec
+        	IF NOT EXISTS(
+				SELECT 1
+        			FROM sponsortec
+        			WHERE nome ILIKE nomeSponsor)
+			THEN
+
+            		-- A questo punto lo sponsor è valido e lo inserisco
+            		INSERT INTO sponsor_secondari(nome, squadra)
+            		VALUES (nomeSponsor, nomeSquadra);
+
+			IF finanziament IS NOT NULL THEN
+
+				UPDATE sponsor_secondari
+				SET finanziamento = finanziament
+				WHERE nome = nomeSponsor;
+			END IF;
+        	ELSE
+            		RAISE EXCEPTION 'Lo sponsor è già sponsor tecnico di un altra squadra';    
+        	END IF;
+    	ELSE
+        	RAISE EXCEPTION 'Lo sponsor è già sponsor secondario di un altra squadra';
+    	END IF;
+END 
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE insert_squadra_on_trofeoSquadra(
+nazione varchar(100),
+nomeCampionato varchar(100),
+squadraVincitrice varchar(100))
+AS $$
+
+DECLARE
+	compNaz competizioni_nazionali%ROWTYPE;
+	compNonNaz competizioni_non_nazionali%ROWTYPE;
+	trofeo trofeo_squadra%ROWTYPE;
+BEGIN
+	IF nazione IS NOT NULL THEN
+		--significa che è un campionato nazionale
+	
+		SELECT *
+		INTO compNaz
+		FROM competizioni_nazionali AS c
+		WHERE c.nome ILIKE nomeCampionato AND c.nazione ILIKE nazione;
+
+		UPDATE trofeo_squadra AS t
+		SET t.squadra = squadraVincitrice
+		WHERE t.nome ILIKE compNaz.nometrofeo AND t.squadra IS NULL;
+	ELSE
+		--significa che è un campionato non nazionale
+
+		SELECT *
+		INTO compNonNaz
+		FROM competizioni_non_nazionali AS c
+		WHERE c.nome ILIKE nomeCampionato;
+
+		UPDATE trofeo_squadra AS t
+		SET t.squadra = squadraVincitrice
+		WHERE t.nome ILIKE compNonNaz.nometrofeo AND t.squadra IS NULL;
+	END IF;
+END;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE insert_feature(
+    nomeFeature VARCHAR(100)
+)
+AS $$ 
+BEGIN
+    	-- Controllo che non esista già una feature con questo nome
+    	IF NOT EXISTS (SELECT 1
+        	       FROM feature_caratteristiche
+        	       WHERE tipologia ILIKE nomeFeature
+    	) THEN
+        	-- La feature non esiste, la inserisco
+        	INSERT INTO feature_caratteristiche(tipologia)
+        	VALUES (nomeFeature);
+    	ELSE
+        	RAISE EXCEPTION 'La feature esiste già';
+    	END IF;
+END $$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION prendi_solo_feature_disponibili(id_giocatore VARCHAR(20))
+RETURNS VARCHAR(1000) AS $$
+DECLARE
+    	feature feature_caratteristiche%ROWTYPE;
+    	stringaDiRitorno VARCHAR(1000) := '';  -- Inizializzo la stringa vuota
+BEGIN
+   	-- Scorro un for per creare una stringa di feature caratteristiche disponibili
+    	FOR feature IN 	SELECT *
+                   	FROM feature_caratteristiche
+                   	WHERE tipologia NOT IN (SELECT tipo
+                                          	FROM giocatore_possiede_feature_caratteristiche
+                                          	WHERE giocatore = id_giocatore)
+    	LOOP
+        	-- Concateno il campo tipologia della feature alla stringa di ritorno
+        	stringaDiRitorno := stringaDiRitorno || '_' || feature.tipologia;
+    	END LOOP;
+
+    	RETURN stringaDiRitorno;
+END
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE insert_militanza(
+    id_giocatore varchar(20), 
+    fineExMilitanza DATE, 
+    inizioNuovaMilitanza DATE, 
+    fineNuovaMilitanza DATE, 
+    squadra varchar(100), 
+    tiriSegnati INT, 
+    partiteGiocate INT, 
+    goalSubiti INT)
+AS $$
+
+DECLARE
+	lastMil Militanza%ROWTYPE;
+   	lastDate DATE;
+    	numM INT;
+    	id_mil varchar(20);
+	numGiocatori INT;
+BEGIN
+    		IF fineExMilitanza IS NOT NULL THEN
+
+        		-- se non era stata impostata una data di fine militanza allora questo valore sarà diverso da null
+        		-- prendo la militanza ancora in atto
+
+        		SELECT *
+        		INTO lastMil
+        		FROM Militanza AS M
+        		WHERE M.id_giocatore LIKE id_giocatore AND M.fine IS NULL;
+		
+			IF LOWER(lastMil.squadra) <> LOWER(squadra) THEN
+
+        		IF fineExMilitanza >= NOW() 
+                AND EXTRACT(MONTH FROM fineExMilitanza) IN (1, 7, 8, 9)  
+				AND inizioNuovaMilitanza >= fineExMilitanza THEN            		
+					-- mi assicuro che la fine della vecchia militanza 
+                    --sia valida e la inserisco
+
+            		UPDATE Militanza AS M
+            		SET M.fine = fineExMilitanza
+            		WHERE M.id_giocatore LIKE id_giocatore AND M.fine IS NULL;
+            		-- inserisco la nuova militanza senza controllare 
+                    --la validità poiché già stato fatto sull'applicativo
+            		
+					id_mil := genera_id('Militanza', 'id_militanza');
+
+            		INSERT INTO Militanza(inizio, fine, id_giocatore, squadra, tirisegnati, partitegiocate, id_militanza)
+            		VALUES (inizioNuovaMilitanza, fineNuovaMilitanza, id_giocatore, squadra, tiriSegnati, partiteGiocate, id_mil);
+
+            		IF goalSubiti IS NOT NULL THEN
+                			
+                        INSERT INTO goalSubiti
+                        (goalSubiti, id_giocatore, id_militanza)
+                		VALUES (goalSubiti, id_giocatore, id_mil);
+            		END IF;
+        		ELSE
+            		RAISE EXCEPTION 'Data fine vecchia Militanza non valida';
+        		END IF;
+			ELSE
+				RAISE EXCEPTION 'Il giocatore si trova gia nella squadra';
+			END IF;
+    	ELSE
+        	SELECT *
+			INTO lastMil
+   			FROM Militanza m
+    			
+            WHERE m.id_giocatore = p_id_giocatore
+            AND m.fine = (SELECT MAX(fine)
+        			      FROM Militanza
+        			      WHERE id_giocatore = p_id_giocatore);
+		
+			IF LOWER(lastMil.squadra) <> LOWER(squadra) THEN
+
+				IF inizioNuovaMilitanza >= lastDate THEN      
+                -- non faccio il controllo dei mesi perché già fatto sull'applicativo 
+
+            		id_mil := genera_id('Militanza', 'id_militanza');
+
+            		INSERT INTO Militanza(inizio, fine, id_giocatore, squadra, tirisegnati, partitegiocate, id_militanza)
+            		VALUES (inizioNuovaMilitanza, fineNuovaMilitanza, id_giocatore, squadra, tiriSegnati, partiteGiocate, id_mil);
+
+	    			IF goalSubiti IS NOT NULL THEN
+                		
+                        INSERT INTO goalSubiti
+                        (goalSubiti, id_giocatore, id_militanza)
+                		VALUES (goalSubiti, id_giocatore, id_mil);
+            		END IF;
+        		ELSE
+            		RAISE EXCEPTION 'Data inizio Militanza non valida';
+        		END IF;
+			ELSE
+				RAISE EXCEPTION 'Il giocatore si trova gia nella squadra';
+			END IF;
+    	END IF;
+END;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION prendi_squadre_idonee(
+	nazionale varchar(100),
+	type varchar(100),
+	nomeCampionato varchar(100),
+	annoInizio INT)
+RETURNS varchar(5000) AS $$ù
+
+DECLARE
+	listaSquadreIdonee VARCHAR(5000);
+	squadra VARCHAR(100);
+BEGIN
+	--Se nazionale non è null vuol dire che è una competizione nazione
+	IF nazionale IS NOT NULL THEN
+
+		--prendo tutte le squadre che hanno la nazionalità inserita e che rispettino il massimo
+		--e il minimo di giocatori della rosa per partecipare alle competizioni
+
+		FOR squadra IN (SELECT S.nomeSquadra
+						FROM squadre AS S
+						JOIN Rosa AS R ON S.nomeSquadra = R.Squadra
+						WHERE S.nazionalita = nazionalita
+  							AND EXTRACT(YEAR FROM R.Anno) = annoInizio 
+  							AND EXTRACT(MONTH FROM R.Anno) = 6
+						GROUP BY S.nomeSquadra
+						HAVING COUNT(DISTINCT R.ID_Giocatore) BETWEEN 16 AND 24
+  							AND S.nomeSquadra NOT IN (SELECT SGIC.nomeSquadra
+    							  	  				  FROM squadra_gioca_in_competizione_nazionale AS SGIC
+    							  	  				  WHERE SGIC.anno = annoInizio))
+
+		LOOP
+			listaSquadreIdonee := listaSquadreIdonee || '_' || squadra;
+		END LOOP;
+	ELSE
+		FOR squadra IN (SELECT squadra
+						FROM Rosa AS R
+						WHERE EXTRACT(YEAR FROM R.anno) = annoInizio 
+							AND EXTRACT(MONTH FROM R.anno) = 6
+						GROUP BY R.Squadra
+						HAVING COUNT(R.ID_Giocatore) BETWEEN 16 AND 24
+							AND R.squadra NOT IN (SELECT SGIC.nomeSquadra
+    							      			  FROM squadra_gioca_in_competizione_nazionale AS SGIC
+    							      			  WHERE SGIC.anno = annoInizio))
+		LOOP
+			listaSquadreIdonee := listaSquadreIdonee || '_' || squadra;
+		END LOOP;
+	END IF;
+RETURN listaSquadreIdonee;
+END;
 
 ----------------------------------------------------------------------------------------------------------------
 
-----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION controlla_utente()
+RETURNS TRIGGER AS $$
+BEGIN
+    	IF NOT EXISTS (SELECT 1 FROM utente WHERE login = NEW.login) THEN
+        	RETURN NEW;
+    	ELSE
+        	RAISE EXCEPTION 'Nome Utente già utilizzato';
+    	END IF;
+END;
+$$ LANGUAGE plpgsql;
 
-----------------------------------------------------------------------------------------------------------------
-
-----------------------------------------------------------------------------------------------------------------
-
-----------------------------------------------------------------------------------------------------------------
-
-----------------------------------------------------------------------------------------------------------------
-
-----------------------------------------------------------------------------------------------------------------
-
-----------------------------------------------------------------------------------------------------------------
-
-----------------------------------------------------------------------------------------------------------------
-
-----------------------------------------------------------------------------------------------------------------
-
-----------------------------------------------------------------------------------------------------------------
-
+CREATE OR REPLACE TRIGGER insert_utente
+BEFORE INSERT ON utente
+FOR EACH ROW
+EXECUTE FUNCTION controlla_utente();
 ----------------------------------------------------------------------------------------------------------------
