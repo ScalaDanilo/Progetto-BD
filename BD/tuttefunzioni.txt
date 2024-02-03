@@ -454,6 +454,8 @@ AFTER INSERT ON Militanza
 FOR EACH ROW
 EXECUTE FUNCTION inserisci_in_rosa();
 ----------------------------------------------------------------------------------------------------------------
+CALL insert_competizione_trofeoSquadra('Serie A', 2005, 'Italia', NULL, 'Serie A TIM', 2006);
+
 CREATE OR REPLACE PROCEDURE insert_competizione_trofeoSquadra(
     nomeCompetizione varchar(100),
     annoInizio INT,
@@ -468,61 +470,50 @@ DECLARE
     	trofeoSquadra trofeo_squadra%ROWTYPE;
 BEGIN
     	IF nazionalita IS NOT NULL THEN
-
         	-- se nazionalita non è null, allora vuol dire che è una competizione nazionale
-
-        	SELECT * 
-		INTO competizioneNaz
-        	FROM competizioni_nazionali AS c
-        	WHERE LOWER(c.nome) LIKE LOWER(nomeCompetizione);
-
-        	IF competizioneNaz IS NULL THEN
-
+        	IF NOT EXISTS(	
+				SELECT 1
+				FROM competizioni_nazionali AS c
+        			WHERE LOWER(c.nome) LIKE LOWER(nomeCompetizione))
+		THEN
             		-- vuol dire che non esiste ancora una competizione con gli stessi dati
-
-            		SELECT * INTO trofeoSquadra
-            		FROM trofeo_squadra AS t
-            		WHERE LOWER(t.nome) LIKE LOWER(nomeTrofeo);
-
-            		IF trofeoSquadra IS NULL THEN
-
+            		IF NOT EXISTS( 
+							SELECT 1
+            				FROM trofeo_squadra AS t
+            				WHERE LOWER(t.nome) LIKE LOWER(nomeTrofeo))
+			THEN
                 		-- vuol dire che non esiste un trofeo con quel nome
-
+						INSERT INTO trofeo_squadra(nome, annovincita)
+                		VALUES (nomeTrofeo, annoFine);
+						
                 		INSERT INTO competizioni_nazionali(nome, nazione, anno, nomeTrofeo, annoVincita)
                 		VALUES (nomeCompetizione, nazionalita, annoInizio, nomeTrofeo, annoFine);
-
-                		INSERT INTO trofeo_squadra(nome, annovincita)
-                		VALUES (nomeTrofeo, annoFine);
             		ELSE
                 		RAISE EXCEPTION 'Un trofeo con questo nome esiste già';
             		END IF;
         	ELSE
             		RAISE EXCEPTION 'La competizione esiste già';
         	END IF;
+
     	ELSIF tipo IS NOT NULL THEN
-
         	-- se tipo non è null, vuol dire che è stata inserita una competizione non nazionale
-        	SELECT * INTO competizioneNonNaz
-        	FROM competizioni_non_nazionali AS c
-        	WHERE LOWER(c.nome) LIKE LOWER(nomeCompetizione);
-
-        	IF competizioneNonNaz IS NULL THEN
-
+        	IF NOT EXISTS(
+				SELECT 1
+        			FROM competizioni_non_nazionali AS c
+        			WHERE LOWER(c.nome) LIKE LOWER(nomeCompetizione)) 
+		THEN
             		-- vuol dire che non esiste una competizione con questo nome
-
-            		SELECT * INTO trofeoSquadra
-            		FROM trofeo_squadra AS t
-            		WHERE LOWER(t.nome) LIKE LOWER(nomeTrofeo);
-
-            		IF trofeoSquadra IS NULL THEN
-
+            		IF NOT EXISTS(
+					SELECT 1
+            				FROM trofeo_squadra AS t
+            				WHERE LOWER(t.nome) LIKE LOWER(nomeTrofeo))
+			THEN
                 		-- vuol dire che non esiste un trofeo con questo nome
-
+						INSERT INTO trofeo_squadra(nome, annovincita)
+                		VALUES (nomeTrofeo, annoFine);
+						
                 		INSERT INTO competizioni_non_nazionali(nome, tipo, anno, nomeTrofeo, annoVincita)
                 		VALUES (nomeCompetizione, tipo, annoInizio, nomeTrofeo, annoFine);
-
-                		INSERT INTO trofeo_squadra(nome, annovincita)
-                		VALUES (nomeTrofeo, annoFine);
             		ELSE
                 		RAISE EXCEPTION 'Il trofeo esiste già';
             		END IF;
