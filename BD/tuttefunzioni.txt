@@ -993,7 +993,7 @@ $$ LANGUAGE plpgsql;
 SELECT cron.schedule('0 0 1 1 *', 'SELECT squadreNonIdonee()');
 ----------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION inserisci_trofei_a_calciatori()
-RETRUNS TRIGGER AS $$
+RETURNS TRIGGER AS $$
 DECLARE
 	giocatori CALCIATORE%ROWTYPE;
 BEGIN
