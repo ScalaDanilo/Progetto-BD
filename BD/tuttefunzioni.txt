@@ -991,3 +991,22 @@ END;
 $$ LANGUAGE plpgsql;
 
 SELECT cron.schedule('0 0 1 1 *', 'SELECT squadreNonIdonee()');
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION inserisci_trofei_a_calciatori()
+RETRUNS TRIGGER AS $$
+DECLARE
+	giocatori CALCIATORE%ROWTYPE;
+BEGIN
+	FOR giocatori IN SELECT * FROM ROSA WHERE squadra=NEW.squadra AND NEW.annoVincita = EXTRACT(YEAR FROM anno) AND EXTRACT(MONTH FROM anno) = 6 LOOP
+		INSERT INTO trofeo_squadra_calciatore(nome, annoVincita, squadra, calciatoreV)
+		VALUES (NEW.nome, NEW.anno, NEW.squadra, giocatori.id_giocatore);
+	END LOOP;
+
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER inserisci_trofei
+AFTER INSERT OR UPDATE OF squadra ON trofeo_squadra
+FOR EACH ROW
+EXECUTE FUNCTION inserisci_trofei_a_calciatori()
