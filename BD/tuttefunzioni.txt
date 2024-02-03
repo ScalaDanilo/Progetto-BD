@@ -218,3 +218,361 @@ BEGIN
     RETURN;
 END;
 $$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE inserisci_Calciatore_Ruolo_Sponsor_Squadra_Militanza(
+    nomeC VARCHAR(100), 
+    cognomeC VARCHAR(100), 
+    nazioneC VARCHAR(100), 
+    dataNascitaC DATE, 
+    dataRitiroC DATE, 
+    piedePr VARCHAR(20),
+    ruolo VARCHAR(200),
+    sponsorNome VARCHAR(100),
+    nomeSquadra VARCHAR(100), 
+    nazionalita VARCHAR(100),
+    inizioMil DATE, 
+    fineMil DATE, 
+    tiriSegnati INT, 
+    partiteGiocate INT, 
+    goalSubiti INT)
+AS $$
+DECLARE
+    id_gio VARCHAR(20);
+    id_mil VARCHAR(20);
+BEGIN
+    	-- Controllo se esiste già il calciatore
+    	IF NOT EXISTS (SELECT 1
+    				   FROM Calciatore
+    				   WHERE nome ILIKE nomeC AND Cognome ILIKE cognomeC AND nazionalita ILIKE nazioneC AND nascita = dataNascitaC) 
+			THEN
+        	-- Non esiste il calciatore, passo al prossimo controllo       
+        	IF nazionalita IS NOT NULL THEN
+
+            		-- Se la nazionalità non è null, vuol dire che la squadra è stata inserita dall'admin
+            		IF NOT EXISTS(SELECT 1   		
+            					  FROM Squadre AS s
+            					  WHERE s.nomeSquarda ILIKE nomeSquadra) 
+						THEN
+                		-- Controllo lo sponsor inserito
+                		IF NOT EXISTS(SELECT 1 
+                					  FROM Squadra
+                					  WHERE nomeSponsor ILIKE sponsorNome) THEN
+
+                    			-- Genero un nuovo ID per il calciatore
+                    			id_gio := genera_id('Calciatore', 'id_giocatore');
+
+                    			-- Inserisco calciatore
+                    			INSERT INTO Calciatore(nome, cognome, nazione, nascita, dataritiro, piedepr, id_giocatore)
+                    			VALUES (nomeC, cognomeC, nazioneC, dataNascitaC, dataRitiroC, piedePr, id_gio);
+
+                    			-- Inserisco ruolo
+                    			INSERT INTO Ruolo(ruolo, id_giocatore)
+                    			VALUES (ruolo, id_gio);
+
+                   				-- Inserisco sponsor
+                    			INSERT INTO SponsorTec(nome)
+                    			VALUES (nomeSponsor);
+
+                    			-- Inserisco squadra
+                    			INSERT INTO Squadre(nomeSquadra, nazionalita, nomeSponsor)
+                   				VALUES (nomeSquadra, nazionalita, nomeSponsor);
+
+                    			-- Genero un nuovo ID per la militanza
+                    			id_mil := genera_id('Militanza', 'id_militanza');
+
+                    			-- Inserisco militanza
+                    			INSERT INTO Militanza(inizio, fine, tirisegnati, partiteGiocate, squadra, giocatore, id_militanza)
+                    			VALUES (inizioMil, fineMil, tiriSegnati, partiteGiocate, nomeSquadra, id_gio, id_mil);
+                   				
+								-- Inserisco goalSubiti se non è null
+                    			IF goalSubiti IS NOT NULL THEN
+                        			INSERT INTO Goalsubiti(goalSubiti, id_giocatore, id_militanza)
+                        			VALUES (goalSubiti, id_gio, id_mil);
+                    			END IF;
+                		ELSE
+                    			RAISE EXCEPTION 'Lo sponsor inserito è già presente';
+                		END IF;
+            		ELSE
+                		RAISE EXCEPTION 'La squadra inserita è già presente';
+            		END IF;
+        	ELSE
+			-- Se la nazionalità è null, l'admin non ha inserito la squadra, ma ha trovato una squadra già esistente
+
+            		id_gio := genera_id('Calciatore', 'id_giocatore');
+
+            		-- Inserisco calciatore
+            		INSERT INTO Calciatore(nome, cognome, nazione, nascita, dataritiro, piedepr, id_giocatore)
+            		VALUES (nomeC, cognomeC, nazioneC, dataNascitaC, dataRitiroC, piedePr, id_gio);
+
+            		-- Inserisco ruolo
+            		INSERT INTO Ruolo(ruolo, id_gio)
+            		VALUES (ruolo, id_gio);
+
+            		-- Genero un nuovo ID per la militanza
+            		id_mil := genera_id('Militanza', 'id_militanza');
+
+            		-- Inserisco militanza
+            		INSERT INTO Militanza(inizio, fine, tirisegnati, partiteGiocate, squadra, giocatore, id_militanza)
+            		VALUES (inizioMil, fineMil, tiriSegnati, partiteGiocate, nomeSquadra, id_gio, id_mil);
+
+            		-- Inserisco goalSubiti se non è null
+            		IF goalSubiti IS NOT NULL THEN
+
+                		INSERT INTO Goalsubiti(goalSubiti, id_giocatore, id_militanza)
+                		VALUES (goalSubiti, id_gio, id_mil);
+
+            		END IF;
+		END IF;
+	ELSE
+        	RAISE EXCEPTION 'Il calciatore è già presente';
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION genera_id(tabella varchar(50), tupla varchar(50))
+RETURNS varchar(20) AS $$
+DECLARE
+    query varchar;
+    num INT;
+    id varchar(20);
+BEGIN
+    query := 'SELECT COALESCE(MAX(CAST(SUBSTRING(' || tupla || ' FROM 5) AS INT)), 0) + 1 FROM ' || tabella;
+
+    EXECUTE query INTO num;
+
+    IF tabella ILIKE 'Militanza' THEN
+        id := 'MILI' || LPAD(CAST(num AS VARCHAR), 10, '0');
+    ELSIF tabella ILIKE 'Calciatore' THEN
+        id := 'CALC' || LPAD(CAST(num AS VARCHAR), 10, '0');
+    END IF;
+
+    RETURN id;
+END;
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION esegui_logica_ogni_6_mesi() 
+RETURNS VOID AS $$ 
+DECLARE
+	dataCorrente date := NOW();
+BEGIN   
+	IF EXTRACT(MONTH FROM dataCorrente) = 12 THEN  			--inserimento invernale
+		FOR squadra IN (SELECT nomesquadra FROM squadre) LOOP   --prendo tutte le squadre
+			FOR militanza IN (SELECT * 			--e prendo tutte le militanze che non sono iniziate 
+					  		  FROM militanza AS m 
+					  		  WHERE (m.squadra = squadra) AND (fine IS NULL OR EXTRACT(YEAR FROM fine) > EXTRACT(YEAR FROM dataCorrente);  
+							  --manca il controllo per non prendere quelli che hanno iniziato la militanza d'estate
+							  --ma non lo faccio pochè dopo con l'if controllo se i giocatori con la militanza d'estate sono gia presenti nel db
+							  LOOP
+							  
+							  IF NOT EXISTS(SELECT 1 
+									FROM rosa AS r 
+									WHERE r.id_giocatore = militanza.id_giocatore 
+									AND r.squadra = squadra 
+									AND r.anno = dataCorrente) THEN
+
+							  	INSERT INTO rosa(id_giocatore, squadra, anno)
+							  	VALUES (militanza.id_giocatore, squadra, dataCorrente);
+							  
+							  END IF;
+			END LOOP;
+		END LOOP;
+		RAISE NOTICE 'Eseguito in sessione invernale: %', now(); 
+	ELSE 
+		FOR squadra IN (SELECT nomesquadra FROM squadre) LOOP
+			FOR militanza IN (SELECT * 
+					  		  FROM militanza AS m 
+					  		  WHERE (m.squadra = squadra) AND (fine IS NULL OR EXTRACT(YEAR FROM fine) >= EXTRACT(YEAR FROM dataCorrente) 
+															            AND EXTRACT(MONTH FROM fine) > 1);
+							  LOOP
+							  
+							  IF NOT EXISTS(SELECT 1 
+									FROM rosa AS r 
+									WHERE r.id_giocatore = militanza.id_giocatore 
+									AND r.squadra = squadra 
+									AND r.anno = dataCorrente) THEN
+								
+							  	INSERT INTO rosa(id_giocatore, squadra, anno)
+							  	VALUES (militanza.id_giocatore, squadra, dataCorrente);
+							  
+							  END IF;
+			END LOOP;
+		END LOOP;
+
+		RAISE NOTICE 'Eseguito in sessione primaverile: %', now(); 
+	END IF;
+END; 
+$$ LANGUAGE plpgsql;  
+
+-- Pianifica l'esecuzione della funzione ogni 6 mesi 
+SELECT cron.schedule('0 0 31 12,6 *', 'SELECT esegui_logica_ogni_6_mesi()');
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION inserisci_in_rosa()
+RETURNS TRIGGER AS $$
+DECLARE
+    data DATE;
+BEGIN
+	--arrotondo data
+	IF EXTRACT(MONTH FROM NEW.inizio) IN (7, 8, 9) THEN
+        	data := DATE_TRUNC('YEAR', NEW.inizio) + INTERVAL '1 YEAR' - INTERVAL '1 DAY';
+    	ELSE
+        	data := DATE_TRUNC('YEAR', NEW.inizio) + INTERVAL '6 MONTHS' - INTERVAL '1 DAY';
+    	END IF;
+
+	--se siamo nel presente inserisco solo nella rosa attuale perche il resto verra fatto dalla funzione di manutenzione della rosa automatico
+	IF EXTRACT(YEAR FROM NEW.inizio) >= EXTRACT(YEAR FROM NOW()) THEN	
+
+    		INSERT INTO rosa(id_giocatore, squadra, anno)
+    		VALUES (NEW.id_giocatore, NEW.squadra, data);
+
+    		RETURN NEW;
+	
+	ELSE	--se invece l'inserimento inizia prima del presente allora inserisco dentro la rosa per ogni intervallo fino ad arrivare al presente in cui verra poi continuato dalla manutenzione
+
+
+		WHILE EXTRACT(YEAR FROM data) < EXTRACT(YEAR FROM NOW()) LOOP
+			
+			IF EXTRACT(MONTH FROM data) = 6 THEN
+				
+				INSERT INTO rosa(id_giocatore, squadra, anno)
+    				VALUES (NEW.id_giocatore, NEW.squadra, data);
+			
+				data := DATE_TRUNC('YEAR', data) + INTERVAL '1 YEAR' - INTERVAL '1 DAY';
+			ELSE 
+			
+				INSERT INTO rosa(id_giocatore, squadra, anno)
+    				VALUES (NEW.id_giocatore, NEW.squadra, data);
+
+				data := DATE_TRUNC('YEAR', data + INTERVAL '1 YEAR') + INTERVAL '6 MONTHS' - INTERVAL '1 DAY';
+			END IF;
+		END LOOP;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER inserimentoRosa
+AFTER INSERT ON Militanza
+FOR EACH ROW
+EXECUTE FUNCTION inserisci_in_rosa();
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE insert_competizione_trofeoSquadra(
+    nomeCompetizione varchar(100),
+    annoInizio INT,
+    nazionalita varchar(100),
+    tipo varchar(100),
+    nomeTrofeo varchar(100),
+    annoFine INT)
+AS $$
+DECLARE
+    	competizioneNaz competizioni_nazionali%ROWTYPE;
+    	competizioneNonNaz competizioni_non_nazionali%ROWTYPE;
+    	trofeoSquadra trofeo_squadra%ROWTYPE;
+BEGIN
+    	IF nazionalita IS NOT NULL THEN
+
+        	-- se nazionalita non è null, allora vuol dire che è una competizione nazionale
+
+        	SELECT * 
+		INTO competizioneNaz
+        	FROM competizioni_nazionali AS c
+        	WHERE LOWER(c.nome) LIKE LOWER(nomeCompetizione);
+
+        	IF competizioneNaz IS NULL THEN
+
+            		-- vuol dire che non esiste ancora una competizione con gli stessi dati
+
+            		SELECT * INTO trofeoSquadra
+            		FROM trofeo_squadra AS t
+            		WHERE LOWER(t.nome) LIKE LOWER(nomeTrofeo);
+
+            		IF trofeoSquadra IS NULL THEN
+
+                		-- vuol dire che non esiste un trofeo con quel nome
+
+                		INSERT INTO competizioni_nazionali(nome, nazione, anno, nomeTrofeo, annoVincita)
+                		VALUES (nomeCompetizione, nazionalita, annoInizio, nomeTrofeo, annoFine);
+
+                		INSERT INTO trofeo_squadra(nome, annovincita)
+                		VALUES (nomeTrofeo, annoFine);
+            		ELSE
+                		RAISE EXCEPTION 'Un trofeo con questo nome esiste già';
+            		END IF;
+        	ELSE
+            		RAISE EXCEPTION 'La competizione esiste già';
+        	END IF;
+    	ELSIF tipo IS NOT NULL THEN
+
+        	-- se tipo non è null, vuol dire che è stata inserita una competizione non nazionale
+        	SELECT * INTO competizioneNonNaz
+        	FROM competizioni_non_nazionali AS c
+        	WHERE LOWER(c.nome) LIKE LOWER(nomeCompetizione);
+
+        	IF competizioneNonNaz IS NULL THEN
+
+            		-- vuol dire che non esiste una competizione con questo nome
+
+            		SELECT * INTO trofeoSquadra
+            		FROM trofeo_squadra AS t
+            		WHERE LOWER(t.nome) LIKE LOWER(nomeTrofeo);
+
+            		IF trofeoSquadra IS NULL THEN
+
+                		-- vuol dire che non esiste un trofeo con questo nome
+
+                		INSERT INTO competizioni_non_nazionali(nome, tipo, anno, nomeTrofeo, annoVincita)
+                		VALUES (nomeCompetizione, tipo, annoInizio, nomeTrofeo, annoFine);
+
+                		INSERT INTO trofeo_squadra(nome, annovincita)
+                		VALUES (nomeTrofeo, annoFine);
+            		ELSE
+                		RAISE EXCEPTION 'Il trofeo esiste già';
+            		END IF;
+        	ELSE
+            		RAISE EXCEPTION 'La competizione esiste già';
+        	END IF;
+    	END IF;
+END;
+$$ LANGUAGE plpgsql;
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION prendi_lista_nascite(
+    nomeC VARCHAR(100), 
+    cognomeC VARCHAR(100)
+)
+RETURNS VARCHAR(500) AS $$
+DECLARE 
+    	listaNascite VARCHAR(500) := '';  
+	dataN DATE;	
+BEGIN
+	--prendo la data di nascita dei giocatori 
+    	FOR dataN IN SELECT nascita FROM Calciatore WHERE nome = nomeC AND cognome = cognomeC
+    	LOOP
+        	listaNascite := listaNascite || '_' || dataN;
+    	END LOOP;
+
+    RETURN listaNascite;
+END;
+$$ LANGUAGE PLPGSQL;
+----------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------
