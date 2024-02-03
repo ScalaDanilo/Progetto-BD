@@ -606,7 +606,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------
-CREATE OR REPLACE PROCEDURE insert_vincitore_in_trofeo_individuale(id_giocatore varchar(100), anno INT, trofeo varchar(100))
+CREATE OR REPLACE PROCEDURE insert_vincitore_in_trofeo_individuale(id_giocatore varchar(100), anno INT, trofeo varchar(100)) ----
 AS $$
 BEGIN
 	IF ( SELECT vincitore
@@ -675,6 +675,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------
+CALL insert_sponsor_secondari('Amazon', NULL, 'Milan');
+
 CREATE OR REPLACE PROCEDURE insert_sponsor_secondari(
     nomeSponsor VARCHAR(100),
     finanziament INT,
@@ -755,6 +757,8 @@ BEGIN
 	END IF;
 END;
 ----------------------------------------------------------------------------------------------------------------
+CALL insert_feature('Dribbling');
+
 CREATE OR REPLACE PROCEDURE insert_feature(
     nomeFeature VARCHAR(100)
 )
