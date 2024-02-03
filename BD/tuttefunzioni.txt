@@ -609,12 +609,10 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE PROCEDURE insert_vincitore_in_trofeo_individuale(id_giocatore varchar(100), anno INT, trofeo varchar(100))
 AS $$
 BEGIN
-	IF NOT EXISTS(
-			SELECT 1
-			FROM trofeo_individuale
-			WHERE nome = trofeo AND annoVincita = anno)
+	IF ( SELECT vincitore
+	     FROM trofeo_individuale
+	     WHERE nome = trofeo AND annoVincita = anno) IS NULL
 	THEN
-	
 		UPDATE trofeo_individuale
 		SET vincitore = id_giocatore
 		WHERE nome = trofeo AND annoVincita = anno;
