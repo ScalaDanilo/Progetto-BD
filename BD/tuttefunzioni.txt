@@ -964,3 +964,35 @@ BEFORE INSERT ON utente
 FOR EACH ROW
 EXECUTE FUNCTION controlla_utente();
 ----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION squadreNonIdonee()
+RETURNS VOID AS $$
+DECLARE
+	numGiocatori INT;
+BEGIN
+	FOR competizioni IN (	SELECT DISTINCT(nome) 
+							FROM squadra_gioca_in_competizioni_nazionali 
+							WHERE EXTRACT(YEAR FROM anno) = EXTRACT(YEAR FROM NOW() - interval '1 year')) 
+						LOOP
+
+		FOR squadre IN (SELECT squadra 
+						FROM squadra_gioca_in_competizioni_nazionali 
+						WHERE nome = competizioni.nome) 
+						LOOP
+
+			SELECT COUNT(*) INTO numGiocatori 
+			FROM rosa 
+			WHERE squadra = squadre 
+			AND EXTRACT(YEAR FROM anno) = EXTRACT(YEAR FROM NOW() - interval '1 year') 
+			AND EXTRACT(MONTH FROM anno) = 12;
+
+			IF numGiocatori NOT BETWEEN 16 AND 24 THEN
+				DELETE FROM squadra_gioca_in_competizioni_nazionali 
+				WHERE squadra = squadre 
+				AND EXTRACT(YEAR FROM anno) = EXTRACT(YEAR FROM NOW() - interval '1 year');
+			END IF;
+		END LOOP;
+	END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT cron.schedule('0 0 1 1 *', 'SELECT squadreNonIdonee()');
