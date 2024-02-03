@@ -578,6 +578,8 @@ BEGIN
 END;
 
 ----------------------------------------------------------------------------------------------------------------
+CALL elimina_giocatore('CALC0000000002');
+
 CREATE OR REPLACE PROCEDURE elimina_giocatore(
     id_giocatore VARCHAR(20)
 )
@@ -803,6 +805,8 @@ BEGIN
 END
 $$ LANGUAGE plpgsql;
 ----------------------------------------------------------------------------------------------------------------
+CALL insert_militanza('CALC0000000006', NULL, '2006-07-04','2009-09-12', 'Lecce', 98, 43, 10);
+
 CREATE OR REPLACE PROCEDURE insert_militanza(
     id_giocatore varchar(20), 
     fineExMilitanza DATE, 
@@ -813,13 +817,12 @@ CREATE OR REPLACE PROCEDURE insert_militanza(
     partiteGiocate INT, 
     goalSubiti INT)
 AS $$
-
 DECLARE
 	lastMil Militanza%ROWTYPE;
    	lastDate DATE;
-    	numM INT;
-    	id_mil varchar(20);
-	numGiocatori INT;
+    numM INT;
+    id_mil varchar(20);
+	
 BEGIN
     		IF fineExMilitanza IS NOT NULL THEN
 
@@ -829,7 +832,7 @@ BEGIN
         		SELECT *
         		INTO lastMil
         		FROM Militanza AS M
-        		WHERE M.id_giocatore LIKE id_giocatore AND M.fine IS NULL;
+        		WHERE M.giocatore LIKE id_giocatore AND M.fine IS NULL;
 		
 			IF LOWER(lastMil.squadra) <> LOWER(squadra) THEN
 
@@ -841,13 +844,13 @@ BEGIN
 
             		UPDATE Militanza AS M
             		SET M.fine = fineExMilitanza
-            		WHERE M.id_giocatore LIKE id_giocatore AND M.fine IS NULL;
+            		WHERE M.giocatore LIKE id_giocatore AND M.fine IS NULL;
             		-- inserisco la nuova militanza senza controllare 
                     --la validità poiché già stato fatto sull'applicativo
             		
 					id_mil := genera_id('Militanza', 'id_militanza');
 
-            		INSERT INTO Militanza(inizio, fine, id_giocatore, squadra, tirisegnati, partitegiocate, id_militanza)
+            		INSERT INTO Militanza(inizio, fine, giocatore, squadra, tirisegnati, partitegiocate, id_militanza)
             		VALUES (inizioNuovaMilitanza, fineNuovaMilitanza, id_giocatore, squadra, tiriSegnati, partiteGiocate, id_mil);
 
             		IF goalSubiti IS NOT NULL THEN
@@ -865,21 +868,20 @@ BEGIN
     	ELSE
         	SELECT *
 			INTO lastMil
-   			FROM Militanza m
-    			
-            WHERE m.id_giocatore = p_id_giocatore
+   			FROM Militanza m	
+            WHERE m.giocatore = id_giocatore
             AND m.fine = (SELECT MAX(fine)
-        			      FROM Militanza
-        			      WHERE id_giocatore = p_id_giocatore);
+        			      FROM Militanza AS mi
+        			      WHERE mi.giocatore = id_giocatore);
 		
 			IF LOWER(lastMil.squadra) <> LOWER(squadra) THEN
 
-				IF inizioNuovaMilitanza >= lastDate THEN      
+				IF inizioNuovaMilitanza >= lastMil.fine THEN      
                 -- non faccio il controllo dei mesi perché già fatto sull'applicativo 
 
             		id_mil := genera_id('Militanza', 'id_militanza');
 
-            		INSERT INTO Militanza(inizio, fine, id_giocatore, squadra, tirisegnati, partitegiocate, id_militanza)
+            		INSERT INTO Militanza(inizio, fine, giocatore, squadra, tirisegnati, partitegiocate, id_militanza)
             		VALUES (inizioNuovaMilitanza, fineNuovaMilitanza, id_giocatore, squadra, tiriSegnati, partiteGiocate, id_mil);
 
 	    			IF goalSubiti IS NOT NULL THEN
