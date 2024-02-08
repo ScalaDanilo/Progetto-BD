@@ -1,12 +1,12 @@
 ----------------------------------------------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION verification(login IN VARCHAR(50), pass IN VARCHAR(50)) 
+CREATE OR REPLACE FUNCTION verification(loginUser IN VARCHAR(50), passUser IN VARCHAR(50)) 
 RETURNS INT AS $$
 DECLARE
     priority_found INT;
 BEGIN
     SELECT priority INTO priority_found
     FROM UTENTE
-    WHERE UTENTE.login = verification.login AND UTENTE.password = verification.pass;
+    WHERE UTENTE.login = verification.loginUser AND UTENTE.password = verification.passUser;
 
     IF FOUND THEN
         RETURN priority_found;
